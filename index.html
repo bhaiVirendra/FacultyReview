@@ -240,7 +240,6 @@
             
             <div class="profile-row"><span>Name</span><span id="p-name" style="font-weight:600"></span></div>
             <div class="profile-row"><span>Roll No</span><span id="p-roll" style="font-weight:600"></span></div>
-            <div class="profile-row"><span>Batch</span><span id="p-batch" style="font-weight:600"></span></div>
             <div class="profile-row"><span>Email</span><span id="p-email" style="font-weight:600; font-size:0.9rem;"></span></div>
             <div class="profile-row"><span>Status</span><span style="color:var(--success-color); font-weight:600;">Verified ✅</span></div>
             
@@ -377,15 +376,11 @@
         }
 
         function completeLogin() {
-            // Determine Batch from Roll (First 2 digits + 20xx)
-            // Example: 2105xxx -> 21 -> Batch 2021
-            const batchYear = "20" + tempUserData.roll.substring(0, 2);
-            
+            // Batch Logic Removed
             const sessionData = { 
                 roll: tempUserData.roll, 
                 name: tempUserData.name, 
-                email: tempUserData.email,
-                batch: batchYear 
+                email: tempUserData.email
             };
             
             localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
@@ -401,7 +396,7 @@
             document.getElementById('p-name').innerText = user.name;
             document.getElementById('p-email').innerText = user.email;
             document.getElementById('p-roll').innerText = user.roll;
-            document.getElementById('p-batch').innerText = user.batch;
+            // Batch UI update removed
         }
 
         function checkSession() {
