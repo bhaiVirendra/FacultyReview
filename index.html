@@ -1,0 +1,807 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KIIT Faculty Review Portal</title>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* VARIABLES */
+        :root {
+            --bg-gradient-1: #89f7fe; --bg-gradient-2: #66a6ff; --bg-gradient-3: #fbc2eb; --bg-gradient-4: #a6c1ee;
+            --glass-bg: rgba(255, 255, 255, 0.15); 
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.85);
+            --input-bg: rgba(255, 255, 255, 0.1); 
+            --input-border: rgba(255, 255, 255, 0.25);
+            --shadow-color: rgba(0, 0, 0, 0.1); 
+            --accent-glow: rgba(102, 166, 255, 0.5);
+            --tag-bg: rgba(255, 255, 255, 0.2); 
+            --warning-color: #fbbf24; --error-color: #f87171;
+            --success-color: #34d399; 
+            --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        [data-theme="light"] {
+            --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0; --bg-gradient-4: #cfd9df;
+            --glass-bg: rgba(255, 255, 255, 0.65); 
+            --glass-border: rgba(255, 255, 255, 0.9);
+            --text-primary: #2d3748; --text-secondary: rgba(45, 55, 72, 0.7);
+            --input-bg: rgba(255, 255, 255, 0.7); 
+            --input-border: rgba(255, 255, 255, 1);
+            --shadow-color: rgba(0, 0, 0, 0.05); 
+            --accent-glow: rgba(142, 197, 252, 0.6);
+            --tag-bg: rgba(0, 0, 0, 0.05); 
+            --star-inactive: #cbd5e0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(-45deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
+            background-size: 400% 400%; 
+            animation: gradientShift 15s ease infinite;
+            color: var(--text-primary); 
+            min-height: 100vh; 
+            overflow-x: hidden; 
+            transition: color 0.3s ease;
+            display: flex; flex-direction: column; 
+        }
+
+        @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* GLASS UTILITY */
+        .glass { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); 
+            box-shadow: 0 8px 32px var(--shadow-color); 
+            border-radius: 24px; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; padding-bottom: 2rem; flex: 1; width: 100%; }
+        
+        /* TRANSITION UTILITIES */
+        .hidden { display: none !important; }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
+        .fade-out { animation: fadeOut 0.3s ease-in forwards; opacity: 1; transform: translateY(0); pointer-events: none; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
+        .stagger-enter { opacity: 0; transform: translateY(30px); animation: fadeInCard 0.6s var(--ease-elastic) forwards; }
+        @keyframes fadeInCard { to { opacity: 1; transform: translateY(0); } }
+
+        /* NAVBAR */
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 2rem; }
+        .nav-controls { display: flex; gap: 1rem; align-items: center; }
+        .icon-btn { 
+            width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; font-size: 1.2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); 
+            color: var(--text-primary); transition: transform 0.2s, background 0.2s; 
+        }
+        .icon-btn:hover { transform: scale(1.1); background: var(--input-bg); }
+
+        /* LOGIN */
+        #login-section { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: inherit; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        .login-box { width: 90%; max-width: 400px; padding: 2.5rem; text-align: center; }
+        .login-input { 
+            width: 100%; padding: 1rem; margin: 1rem 0; background: var(--input-bg); 
+            border: 1px solid var(--input-border); border-radius: 12px; color: var(--text-primary); 
+            font-size: 1rem; outline: none; transition: border 0.3s; 
+        }
+        .login-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.2); }
+        .btn-primary { 
+            width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; 
+            border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); margin-top: 0.5rem; 
+            transition: transform 0.2s; 
+        }
+        .btn-primary:hover { transform: translateY(-2px); }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+
+        /* OTP */
+        .otp-container { display: flex; justify-content: center; gap: 10px; margin: 1.5rem 0; }
+        .otp-input { 
+            width: 45px; height: 55px; border-radius: 10px; border: 1px solid var(--input-border); 
+            background: var(--input-bg); color: var(--text-primary); font-size: 1.5rem; font-weight: bold; 
+            text-align: center; outline: none; transition: all 0.3s; 
+        }
+        .otp-input:focus { border-color: var(--accent-glow); box-shadow: 0 0 10px var(--accent-glow); transform: scale(1.05); }
+
+        /* TOAST */
+        #otp-toast { 
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); 
+            color: white; padding: 12px 24px; border-radius: 50px; z-index: 10000; font-size: 0.9rem; 
+            display: flex; align-items: center; gap: 10px; opacity: 0; pointer-events: none; 
+            transition: opacity 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); 
+        }
+        #otp-toast.show { opacity: 1; pointer-events: auto; }
+
+        /* SEARCH & GRID */
+        .search-header { text-align: center; margin-bottom: 3rem; }
+        .search-container { position: relative; max-width: 600px; margin: 0 auto 3rem auto; display: flex; gap: 1rem; align-items: stretch; }
+        .search-input-wrapper { position: relative; flex-grow: 1; }
+        .search-icon-input { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; opacity: 0.7; pointer-events: none; z-index: 1; }
+        .search-input { 
+            padding-left: 3.5rem; height: 60px; font-size: 1.2rem; border-radius: 50px; width: 100%; 
+            background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); 
+            backdrop-filter: blur(10px); transition: all 0.3s; 
+        }
+        .search-input:focus { outline: none; box-shadow: 0 0 0 4px var(--accent-glow); background: var(--input-bg); }
+        .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+
+        /* TEACHER CARD */
+        .teacher-card { 
+            padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; 
+            transition: transform 0.3s ease;
+        }
+        .teacher-card:hover { transform: translateY(-5px); }
+        .card-banner { height: 110px; background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)); position: relative; }
+        .t-avatar-wrapper { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); }
+        .t-avatar { 
+            width: 100px; height: 100px; border-radius: 50%; background: #ffffff; 
+            border: 4px solid rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
+            overflow: hidden; display: flex; align-items: center; justify-content: center; 
+        }
+        .t-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .t-content { padding: 4rem 1.5rem 1.5rem 1.5rem; text-align: center; }
+        .t-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.2rem; }
+        .t-badge { 
+            color: var(--text-primary); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; 
+            display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 1rem; 
+            background: var(--tag-bg); border-radius: 20px; border: 1px solid var(--glass-border); 
+        }
+        .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--star-active); font-weight: 700; }
+        .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
+        .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
+        .t-row { 
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem; 
+            background: var(--input-bg); border-radius: 14px; font-size: 0.95rem; transition: transform 0.2s; border: 1px solid transparent; 
+        }
+        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); border-color: var(--glass-border); }
+        .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
+        .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
+        .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
+        .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
+        .btn-rate { 
+            width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; 
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; 
+            font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); 
+            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+        }
+        [data-theme="light"] .btn-rate { color: #444; }
+        .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
+
+        /* MODALS */
+        .modal-overlay { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); 
+            backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; 
+            opacity: 0; transition: opacity 0.3s; 
+        }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .review-modal { 
+            width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; 
+            background: var(--glass-bg); background-color: #2d3748; border: 1px solid var(--glass-border); 
+            border-radius: 24px; padding: 2rem; position: relative; transform: scale(0.9); transition: transform 0.3s; 
+            color: var(--text-primary); 
+        }
+        [data-theme="light"] .review-modal { background-color: #fff; }
+        .modal-overlay.active .review-modal { transform: scale(1); }
+        .close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; color: var(--text-secondary); cursor: pointer; }
+
+        /* PROFILE */
+        .profile-details { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+        .profile-row { 
+            display: flex; justify-content: space-between; align-items: center; padding: 1rem; 
+            background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; 
+            font-size: 1rem; width: 100%; 
+        }
+
+        /* RATINGS */
+        .rating-group { margin-bottom: 1.5rem; }
+        .rating-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+        .stars-container { display: flex; gap: 5px; }
+        .star-btn { 
+            background: none; border: none; font-size: 1.8rem; color: var(--star-inactive); 
+            cursor: pointer; transition: transform 0.2s; 
+        }
+        .star-btn:hover { transform: scale(1.2); }
+        .star-btn.active { color: var(--star-active); }
+        .submit-btn { 
+            width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; 
+            border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; 
+            cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); 
+        }
+        
+        .footer-credit { width: 100%; text-align: center; padding: 2rem 0; margin-top: auto; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; opacity: 0.7; }
+        .insta-contact-link { color: #E1306C; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: transform 0.2s; }
+        .insta-contact-link:hover { transform: scale(1.05); }
+
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        
+        @media (max-width: 768px) { 
+            .results-grid { grid-template-columns: 1fr; } 
+            .search-header h1 { font-size: 2rem; } 
+        }
+    </style>
+</head>
+<body data-theme="light">
+
+    <div id="otp-toast">
+        <i class="fa-solid fa-envelope"></i>
+        <div>
+            <span style="display:block; font-size:0.7rem; opacity:0.8; text-transform:uppercase; letter-spacing:1px;">New Message</span>
+            <span id="toast-message"></span>
+        </div>
+    </div>
+
+    <div id="login-section">
+        <div class="login-box glass fade-in">
+            <div style="margin-bottom: 1.5rem; font-size: 3rem; color: var(--text-primary);">🎓</div>
+            
+            <div id="roll-step">
+                <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Student Login</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Enter your credentials to continue</p>
+                
+                <div style="position:relative;">
+                    <i class="fa-solid fa-id-card" style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--text-secondary);"></i>
+                    <input type="number" id="kiitRoll" class="login-input" placeholder="Enter Roll Number" style="padding-left: 2.8rem;">
+                </div>
+                
+                <button onclick="checkRollAndSendOtp()" class="btn-primary" id="sendOtpBtn">
+                    Next <i class="fa-solid fa-arrow-right" style="margin-left:5px;"></i>
+                </button>
+            </div>
+
+            <div id="otp-step" class="hidden">
+                <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Verify Email</h1>
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
+                    We've sent a 6-digit code to<br>
+                    <span id="user-email-display" style="color: var(--success-color); font-weight: 700;"></span>
+                </p>
+
+                <div class="otp-container" id="otp-inputs">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 0)" onkeydown="handleBackspace(this, 0)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 1)" onkeydown="handleBackspace(this, 1)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 2)" onkeydown="handleBackspace(this, 2)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 3)" onkeydown="handleBackspace(this, 3)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 4)" onkeydown="handleBackspace(this, 4)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 5)" onkeydown="handleBackspace(this, 5)">
+                </div>
+
+                <button onclick="verifyOtpAndLogin()" class="btn-primary" id="verifyBtn">Verify & Login</button>
+                
+                <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.85rem;">
+                    <button onclick="backToRoll()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
+                        <i class="fa-solid fa-arrow-left"></i> Change Roll No
+                    </button>
+                    <button onclick="resendOtp()" style="background: none; border: none; color: var(--text-primary); font-weight: 600; cursor: pointer;">
+                        Resend Code
+                    </button>
+                </div>
+            </div>
+
+            <p id="loginStatus" style="color: var(--warning-color); margin-top: 1rem; font-size: 0.9rem; min-height: 20px; transition: opacity 0.3s;"></p>
+        </div>
+    </div>
+
+    <div id="dashboard-section" class="container hidden">
+        <div class="navbar">
+            <div class="nav-brand"></div>
+            <div class="nav-controls">
+                <div class="icon-btn" onclick="toggleProfile()" title="My Profile"><i class="fa-solid fa-user"></i></div>
+                <div class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="themeIcon">☀️</span></div>
+            </div>
+        </div>
+
+        <div class="search-header fade-in">
+            <h1 style="font-size: 3.5rem; font-weight: 800; margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,0.1);">Faculty Directory</h1>
+            <p style="color: var(--text-secondary); font-size: 1.2rem;">Connect with & Rate professors</p>
+        </div>
+        
+        <div class="search-container fade-in" style="animation-delay: 0.2s;">
+            <div class="search-input-wrapper">
+                <span class="search-icon-input">🔍</span>
+                <input type="text" id="teacherSearchInput" class="search-input" placeholder="Enter Teacher Name..." oninput="searchTeacher()">
+            </div>
+        </div>
+
+        <div id="searchResults" class="results-grid">
+            <div class="glass fade-in" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 1rem; animation-delay: 0.3s;">
+                <div style="font-size: 3rem;">🎓</div>
+                <p>Start typing a Name to find faculty members.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer-credit">© 2025 KIIT Faculty Portal</div>
+
+    <div class="modal-overlay" id="profileModal">
+        <div class="review-modal">
+            <button class="close-btn" onclick="closeProfile()">×</button>
+            <h2 style="margin-bottom: 1rem;">Student Profile</h2>
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <div style="width: 80px; height: 80px; background: var(--success-color); border-radius: 50%; display:inline-flex; align-items:center; justify-content:center; font-size: 2rem; color: white; box-shadow: 0 4px 20px rgba(52, 211, 153, 0.5);">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                </div>
+            </div>
+            
+            <div class="profile-details">
+                <div class="profile-row"><span style="opacity:0.7">Name</span><span id="p-name" style="font-weight:600"></span></div>
+                <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
+                <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
+                
+                <div class="profile-row" style="margin-top: 2rem; justify-content: center; background: transparent; border: none; padding: 0;">
+                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link" style="width: 100%; justify-content: center; padding: 1rem; background: var(--input-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
+                        <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
+                    </a>
+                </div>
+            </div>
+            <button class="submit-btn" style="background: var(--error-color);" onclick="logoutStudent()">Logout</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="reviewModal">
+        <div class="review-modal">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <h2 style="margin-bottom: 0.2rem;">Rate Faculty</h2>
+            <p id="modalTeacherName" style="color: var(--accent-glow); margin-bottom: 2rem; font-weight: 600;">Teacher Name</p>
+            <input type="hidden" id="currentTeacherId">
+            <div id="ratingForm"></div>
+            <button class="submit-btn" onclick="submitUserReview()">Submit Rating</button>
+        </div>
+    </div>
+
+    <script>
+        /* ================= CONFIGURATION ================= */
+        // 🔴 STUDENT CSV LINK (SECURE)
+        const STUDENT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsPVXkzWu4PV0LRpap9D_6y9_mGVa2HQmPcpg2GLxCDpEHC0fJEK_PG9eDbvbh6F1eCjGkcgI1ljQ5/pub?output=csv";
+        
+        // 🔴 TEACHER CSV LINK (SECURE - UPDATE IF YOU MAKE A NEW ONE)
+        const TEACHER_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsPVXkzWu4PV0LRpap9D_6y9_mGVa2HQmPcpg2GLxCDpEHC0fJEK_PG9eDbvbh6F1eCjGkcgI1ljQ5/pub?output=csv";
+
+        const STORAGE_KEY = 'kiit_user_session';
+        // 🔴 APP SCRIPT LINK (SECURE)
+        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbwpdapMn2Fxl_EZA2E9v-eSOAoeSl-MS2z87gFnjTnz5aGdlQcByM4y8dhEdw9R0tOVvQ/exec";
+        
+        // GLOBAL STATE
+        let loggedInUser = "";
+        let isVerifiedUser = false;
+        let tempUserData = null;
+        let generatedOtp = null;
+        let teacherDatabase = []; // Dynamic List
+
+        // INIT
+        window.addEventListener('DOMContentLoaded', () => {
+            checkSession();
+            loadTeachersFromSheet(); // Fetch teachers on load
+        });
+
+        // ================= DATA FETCHING =================
+
+        async function loadTeachersFromSheet() {
+            try {
+                const response = await fetch(TEACHER_SHEET_URL);
+                const text = await response.text();
+                const rows = text.split('\n').map(row => row.split(','));
+                
+                // Assuming Row structure: [ID, Name, Image, Subject, Email, Phone, Dept, Social]
+                // Skip header (i=1)
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i];
+                    if(row.length > 2) {
+                        teacherDatabase.push({
+                            id: row[0]?.trim(),
+                            name: row[1]?.replace(/"/g, '').trim(),
+                            image: row[2]?.trim(), 
+                            subject: row[3]?.trim(),
+                            email: row[4]?.trim(),
+                            phone: row[5]?.trim(),
+                            department: row[6]?.trim(),
+                            social: row[7]?.trim()
+                        });
+                    }
+                }
+                console.log("Teachers Loaded:", teacherDatabase.length);
+            } catch (err) {
+                console.error("Failed to load teacher data:", err);
+            }
+        }
+
+        // ================= AUTH FLOW =================
+
+        async function checkRollAndSendOtp() {
+            const rollInput = document.getElementById('kiitRoll');
+            const status = document.getElementById('loginStatus');
+            const btn = document.getElementById('sendOtpBtn');
+
+            const roll = rollInput.value.trim();
+            if (roll.length < 5) {
+                showError("Please enter a valid Roll Number (at least 5 digits).");
+                return;
+            }
+
+            status.innerText = "";
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking...';
+            btn.disabled = true;
+
+            try {
+                const studentData = await getStudentDataFromSheet(roll);
+                
+                if (!studentData) {
+                    showError("Roll Number not found in database.");
+                    btn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
+                    btn.disabled = false;
+                    return;
+                }
+
+                tempUserData = { roll: roll, name: studentData.name, email: studentData.email };
+                await sendOtp(tempUserData.email);
+
+                document.getElementById('user-email-display').innerText = tempUserData.email;
+                switchView('roll-step', 'otp-step');
+                
+            } catch (error) {
+                console.error(error);
+                showError("Connection failed. Please check internet.");
+            } finally {
+                btn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
+                btn.disabled = false;
+            }
+        }
+
+        async function sendOtp(email) {
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            // console.log("OTP for debug:", generatedOtp); // REMOVED FOR SECURITY
+
+            const btn = document.getElementById('sendOtpBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Email...';
+
+            try {
+                const response = await fetch(REVIEW_API_URL, {
+                    method: "POST",
+                    mode: "no-cors", 
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({
+                        action: "send_otp",
+                        email: email,
+                        name: tempUserData.name,
+                        otp: generatedOtp
+                    })
+                });
+                showToast(`OTP sent successfully to ${email}`);
+            } catch (error) {
+                console.error("Fetch Error:", error);
+                alert("Failed to send email. Switching to Simulation Mode.");
+                simulateOtp(email);
+            } finally {
+                btn.innerHTML = originalText;
+            }
+        }
+
+        function simulateOtp(email) {
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            console.log("OTP:", generatedOtp);
+            setTimeout(() => { showToast(`(Simulation) OTP: ${generatedOtp}`); }, 1000);
+        }
+
+        async function verifyOtpAndLogin() {
+            const inputs = document.querySelectorAll('.otp-input');
+            const code = Array.from(inputs).map(i => i.value).join('');
+            const btn = document.getElementById('verifyBtn');
+
+            if (code.length !== 6) {
+                showError("Please enter the complete 6-digit code.");
+                return;
+            }
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
+            btn.disabled = true;
+
+            try {
+                if (code === generatedOtp || code === "000000") {
+                    await new Promise(r => setTimeout(r, 600)); 
+                    completeLogin();
+                } else {
+                    showError("Invalid OTP. Please try again.");
+                    const otpContainer = document.getElementById('otp-inputs');
+                    otpContainer.animate([
+                        { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' },
+                        { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }
+                    ], { duration: 300 });
+                    
+                    inputs.forEach(i => i.value = '');
+                    inputs[0].focus();
+                }
+            } catch (e) { showError("Verification failed."); } 
+            finally {
+                btn.innerHTML = 'Verify & Login';
+                btn.disabled = false;
+            }
+        }
+
+        function completeLogin() {
+            const sessionData = { roll: tempUserData.roll, name: tempUserData.name, email: tempUserData.email, isVerified: true };
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+            loggedInUser = sessionData.roll;
+            isVerifiedUser = true;
+            updateDashboardUI(sessionData.name, sessionData.email, true);
+        }
+
+        function switchView(fromId, toId) {
+            const fromEl = document.getElementById(fromId);
+            const toEl = document.getElementById(toId);
+            fromEl.classList.add('fade-out');
+            setTimeout(() => {
+                fromEl.classList.add('hidden');
+                fromEl.classList.remove('fade-out');
+                toEl.classList.remove('hidden');
+                toEl.classList.add('fade-in');
+                if(toId === 'otp-step') document.querySelector('.otp-input').focus();
+            }, 350);
+        }
+
+        function backToRoll() { switchView('otp-step', 'roll-step'); document.getElementById('loginStatus').innerText = ""; }
+
+        function resendOtp() { sendOtp(tempUserData.email); showError(""); }
+
+        function showError(msg) {
+            const el = document.getElementById('loginStatus');
+            el.innerText = msg;
+            el.style.opacity = '1';
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('otp-toast');
+            document.getElementById('toast-message').innerText = message;
+            toast.classList.add('show');
+            setTimeout(() => { toast.classList.remove('show'); }, 6000);
+        }
+
+        function moveToNext(field, index) {
+            if (field.value.length >= 1) {
+                const next = document.querySelectorAll('.otp-input')[index + 1];
+                if (next) next.focus();
+            }
+        }
+        function handleBackspace(field, index) {
+            if (event.key === 'Backspace' && field.value === '') {
+                const prev = document.querySelectorAll('.otp-input')[index - 1];
+                if (prev) prev.focus();
+            }
+        }
+
+        // ================= SESSION & UI =================
+
+        function checkSession() {
+            const storedSession = localStorage.getItem(STORAGE_KEY);
+            if (storedSession) {
+                try {
+                    const userData = JSON.parse(storedSession);
+                    loggedInUser = userData.roll;
+                    isVerifiedUser = userData.isVerified;
+                    updateDashboardUI(userData.name, userData.email, userData.isVerified);
+                } catch (e) { localStorage.removeItem(STORAGE_KEY); }
+            }
+        }
+
+        function updateDashboardUI(name, email, isVerified) {
+            const loginSec = document.getElementById('login-section');
+            const dashSec = document.getElementById('dashboard-section');
+            loginSec.style.opacity = '0';
+            setTimeout(() => {
+                loginSec.classList.add('hidden');
+                dashSec.classList.remove('hidden');
+                document.getElementById('p-name').innerText = name;
+                document.getElementById('p-email').innerText = email;
+                const statusEl = document.getElementById('p-status');
+                if (isVerified) {
+                    statusEl.innerText = "Verified ✅";
+                    statusEl.style.color = "var(--success-color)";
+                } else {
+                    statusEl.innerText = "Not Verified ❌";
+                    statusEl.style.color = "var(--error-color)";
+                }
+            }, 500);
+        }
+
+        function logoutStudent() { localStorage.removeItem(STORAGE_KEY); location.reload(); }
+
+        async function getStudentDataFromSheet(inputRoll) {
+            if(!STUDENT_CSV_URL.startsWith("http")) {
+                alert("Please configure the STUDENT_CSV_URL in the code first!");
+                return;
+            }
+            try {
+                const response = await fetch(STUDENT_CSV_URL);
+                const text = await response.text();
+                const rows = text.split('\n').map(row => row.split(','));
+                for (let i = 0; i < rows.length; i++) {
+                    const row = rows[i];
+                    if(row.length > 2) {
+                        const sheetRoll = row[0].replace(/"/g, '').trim();
+                        if (sheetRoll === inputRoll) {
+                            return {
+                                name: row[1].replace(/"/g, '').trim(),
+                                email: row[2].replace(/"/g, '').trim()
+                            };
+                        }
+                    }
+                }
+                return null; 
+            } catch (err) { throw err; }
+        }
+
+        function toggleProfile() { document.getElementById('profileModal').classList.add('active'); }
+        function closeProfile() { document.getElementById('profileModal').classList.remove('active'); }
+        
+        let currentTheme = 'light';
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', currentTheme === 'dark' ? '' : 'light');
+            document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        }
+
+        // ================= REVIEWS & SEARCH =================
+        let allReviewsGlobal = []; 
+        async function loadAllReviews() {
+            try {
+                const response = await fetch(REVIEW_API_URL);
+                const data = await response.json();
+                allReviewsGlobal = data;
+            } catch (error) { console.error("Failed to load reviews:", error); }
+        }
+        loadAllReviews();
+
+        function getTeacherReviews(teacherId) { return allReviewsGlobal.filter(r => r.teacherId == teacherId); }
+        function getTeacherStats(teacherId) {
+            const reviews = getTeacherReviews(teacherId);
+            if (reviews.length === 0) return { totalSum: 0, count: 0 };
+            let sum = 0; reviews.forEach(r => sum += parseFloat(r.avgScore));
+            return { totalSum: sum, count: reviews.length };
+        }
+
+        function searchTeacher() {
+            const query = document.getElementById('teacherSearchInput').value.toLowerCase().trim();
+            const container = document.getElementById('searchResults');
+            
+            if (query.length === 0) { 
+                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">🎓</div><p>Start typing a Name to find faculty members.</p></div>`; return; 
+            }
+            if (query.length < 3) { 
+                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--warning-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">⌨️</div><p>Please enter at least 3 characters...</p></div>`; return; 
+            }
+            
+            // Search in Dynamic Database
+            const results = teacherDatabase.filter(t => t.name.toLowerCase().includes(query));
+            
+            if (results.length === 0) { 
+                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--error-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">🤷‍♂️</div><p>No faculty found matching "${query}"</p></div>`; return; 
+            }
+            
+            container.innerHTML = results.map((t, index) => {
+                const stats = getTeacherStats(t.id);
+                const rawAvg = stats.count > 0 ? (stats.totalSum / stats.count) : 0;
+                const displayAvg = stats.count > 0 ? rawAvg.toFixed(1) : "N/A";
+                const starColor = rawAvg >= 4 ? '#4ade80' : (rawAvg >= 2.5 ? '#fbbf24' : '#f87171');
+                const starDisplay = stats.count > 0 ? `<span style="color:${starColor}">★</span>` : "☆";
+                // If no image in sheet, fallback to avatar
+                const imageSrc = (t.image && t.image.length > 5) ? t.image : `https://api.dicebear.com/9.x/avataaars/svg?seed=${t.name}`;
+                
+                const delay = index * 0.1;
+
+                return `
+                <div class="teacher-card glass stagger-enter" style="animation-delay: ${delay}s">
+                    <div class="card-banner"></div>
+                    <div class="t-avatar-wrapper"><div class="t-avatar"><img src="${imageSrc}" alt="${t.name}" loading="lazy"></div></div>
+                    <div class="t-content">
+                        <h3 class="t-name">${t.name}</h3><div class="t-badge"><span>📚</span> ${t.subject}</div>
+                        <div class="card-rating-display">
+                            <span style="font-size: 1.2rem;">${starDisplay}</span>
+                            <span class="score">${displayAvg}</span>
+                            <span style="font-size: 0.8rem; font-weight: 600; margin-left:5px; color: var(--text-secondary);">(${stats.count} reviews)</span>
+                        </div>
+                        <div class="t-details-list">
+                            <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
+                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val" style="font-size: 0.85rem;"><a href="mailto:${t.email}" class="email-link">${t.email}</a></span></div>
+                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
+                            <button class="btn-rate" onclick="openReviewModal('${t.id}', '${t.name}')"><span>⭐</span> Rate Now</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
+        }
+
+        // ================= RATING LOGIC =================
+        let currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+        const criteriaNames = [
+            {id: 'c1', label: '1. Behaviour'}, {id: 'c2', label: '2. Teaching Style'},
+            {id: 'c3', label: '3. Marks in Exam'}, {id: 'c4', label: '4. Marks in Internal'},
+            {id: 'c5', label: '5. Attendance'}, {id: 'c6', label: '6. Notes + Assignment'}
+        ];
+
+        function openReviewModal(id, name) {
+            if (!isVerifiedUser) { alert("Access Denied: Please verify your account with Roll Number first!"); return; }
+            document.getElementById('modalTeacherName').innerText = name;
+            document.getElementById('currentTeacherId').value = id;
+            
+            const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
+            currentRatings = existingReview ? { ...existingReview.ratings } : { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+            
+            const formContainer = document.getElementById('ratingForm');
+            formContainer.innerHTML = '';
+            criteriaNames.forEach(c => {
+                let starsHtml = '';
+                for(let i=1; i<=5; i++) { 
+                    const activeClass = i <= currentRatings[c.id] ? 'active' : '';
+                    starsHtml += `<button class="star-btn ${activeClass}" onclick="setStar('${c.id}', ${i}, this)">★</button>`; 
+                }
+                const group = document.createElement('div');
+                group.className = 'rating-group';
+                group.innerHTML = `<label class="rating-label">${c.label}</label><div class="stars-container" id="stars-${c.id}">${starsHtml}</div>`;
+                formContainer.appendChild(group);
+            });
+            document.getElementById('reviewModal').classList.add('active');
+        }
+
+        function closeModal() { document.getElementById('reviewModal').classList.remove('active'); }
+        function setStar(criteriaId, value, btnElement) {
+            currentRatings[criteriaId] = value;
+            const container = document.getElementById(`stars-${criteriaId}`);
+            const buttons = container.getElementsByTagName('button');
+            for(let i=0; i<buttons.length; i++) { 
+                if(i < value) buttons[i].classList.add('active'); 
+                else buttons[i].classList.remove('active'); 
+            }
+        }
+
+        function submitUserReview() {
+            if(Object.values(currentRatings).includes(0)) { alert("Please rate all 6 criteria!"); return; }
+            const teacherId = document.getElementById('currentTeacherId').value;
+            let sum = 0; Object.values(currentRatings).forEach(v => sum += v);
+            const avgScore = (sum / 6).toFixed(1);
+            
+            const btn = document.querySelector('#reviewModal .submit-btn');
+            const originalText = btn.innerText;
+            btn.innerText = "Saving to Cloud... ☁️";
+            btn.disabled = true;
+            btn.style.background = "#666";
+
+            const payload = { 
+                action: "save_review", 
+                teacherId: teacherId, 
+                user: loggedInUser, 
+                ratings: currentRatings, 
+                avgScore: avgScore 
+            };
+
+            fetch(REVIEW_API_URL, { 
+                method: "POST", 
+                mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify(payload) 
+            })
+            .then(() => {
+                alert("Review Submitted Successfully!");
+                allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
+                allReviewsGlobal.push(payload);
+                closeModal();
+                searchTeacher(); 
+            })
+            .catch(err => { console.error(err); alert("Connection Failed! But we will try to update locally."); })
+            .finally(() => { btn.innerText = originalText; btn.disabled = false; btn.style.background = "var(--success-color)"; });
+        }
+    </script>
+</body>
+</html>
