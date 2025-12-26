@@ -364,15 +364,13 @@
 
     <script>
         /* ================= CONFIGURATION ================= */
-        // 🔴 STUDENT CSV LINK (SECURE)
-        const STUDENT_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsPVXkzWu4PV0LRpap9D_6y9_mGVa2HQmPcpg2GLxCDpEHC0fJEK_PG9eDbvbh6F1eCjGkcgI1ljQ5/pub?output=csv";
+        // 🔴 STUDENT CSV LINK (YOUR GOOGLE SHEET)
+        const STUDENT_CSV_URL = "https://docs.google.com/spreadsheets/d/1E0CwkNuNThtR_Zdb17IkpMTabQJWyfrhO5On8xPwkuw/export?format=csv";
         
-        // 🔴 TEACHER CSV LINK (SECURE - UPDATE IF YOU MAKE A NEW ONE)
-        const TEACHER_SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsPVXkzWu4PV0LRpap9D_6y9_mGVa2HQmPcpg2GLxCDpEHC0fJEK_PG9eDbvbh6F1eCjGkcgI1ljQ5/pub?output=csv";
-
-        const STORAGE_KEY = 'kiit_user_session';
-        // 🔴 APP SCRIPT LINK (SECURE)
+        // 🔴 APP SCRIPT LINK (FOR OTP & REVIEWS)
         const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbwpdapMn2Fxl_EZA2E9v-eSOAoeSl-MS2z87gFnjTnz5aGdlQcByM4y8dhEdw9R0tOVvQ/exec";
+        
+        const STORAGE_KEY = 'kiit_user_session';
         
         // GLOBAL STATE
         let loggedInUser = "";
@@ -380,7 +378,7 @@
         let tempUserData = null;
         let generatedOtp = null;
         
-        // Pre-populated teacher database
+        // Pre-populated teacher database (Full List)
         let teacherDatabase = [
             { id: 1, name: "Dr. Anita Nayak", image: "", subject: "Maths", email: "anita.nayakfma@kiit.ac.in", phone: "9861402163", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100031911081563" },
             { id: 2, name: "Dr. Arun Kumar Gupta", image: "", subject: "Maths", email: "arun.guptafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/arunkumar.gupta.35325074" },
@@ -401,144 +399,25 @@
             { id: 17, name: "Dr. Utkal Keshari Dutta", image: "", subject: "Maths", email: "utkal.duttafma@kiit.ac.in", phone: "7008199641", department: "MATHEMATICS", social: "https://www.facebook.com/utkal.dutta01" },
             { id: 18, name: "Dr. Vijil Kumar", image: "", subject: "Maths", email: "vijil.kumarfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/DrVijilKumar" },
             { id: 19, name: "Dr. Vishal Pradhan", image: "", subject: "Maths", email: "vishal.pradhanfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/kiit.pradhan" },
-            // --- NEW ADDITIONS (IND4.O - CSE) ---
             { id: 20, name: "Dr. Abhilas Swain", image: "", subject: "Industry 4.0", email: "abhilas.swainfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/abhilas.swain.7" },
             { id: 21, name: "Dr. Anish Pandey", image: "", subject: "Industry 4.0", email: "anish.pandeyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/anish.pandey.961" },
-            { id: 22, name: "Dr. Ashwini Kumar", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
-            { id: 23, name: "Dr. Manoj Kumar Moharana", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
             { id: 24, name: "Dr. Manoj Ukamanal", image: "", subject: "Industry 4.0", email: "manoj.ukamanalfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/manoj.uk/" },
-            { id: 25, name: "Dr. Md. Ehtesham Hasan", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
             { id: 26, name: "Dr. Pampa Sinha", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/pampa.sinha.16" },
             { id: 27, name: "Dr. Rahul", image: "", subject: "Industry 4.0", email: "rahul.choudharyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=61567229407226" },
             { id: 28, name: "Dr. Sanhita Mishra", image: "", subject: "Industry 4.0", email: "", phone: "9438268654", department: "ELECTRICAL", social: "https://www.facebook.com/sanhita.mishra.35" },
-            { id: 29, name: "Dr. Shanta Chakrabarty", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=100083625348451" },
             { id: 30, name: "Dr. Shubhasri Kundu", image: "", subject: "Industry 4.0", email: "", phone: "8280311924", department: "ELECTRICAL", social: "https://www.facebook.com/angel.su.10048" },
             { id: 31, name: "Dr. Smitirupa Pradhan", image: "", subject: "Industry 4.0", email: "smitirupa.pradhanfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/smitirupa.pradhan" },
             { id: 32, name: "Dr. Spandan Guha", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/spandan.guha.5" },
             { id: 33, name: "Dr. Subhra Debdas", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/creatorsubhra" },
-            { id: 34, name: "Prof. A. K. Behera", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
             { id: 35, name: "Prof. D. Mukherjee", image: "", subject: "Industry 4.0", email: "deepmukherjeefet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/t.d.m.m.a.45" },
             { id: 36, name: "Prof. Deepak Kumar Rout", image: "", subject: "Industry 4.0", email: "deepak.routfet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/deepak.kumar.rout.99" },
-            { id: 37, name: "Prof. Kamal K Joshi", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "" },
             { id: 38, name: "Prof. Madhumita Mohanty", image: "", subject: "Industry 4.0", email: "madhumita.mohanty@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=61557402673033" },
             { id: 39, name: "Prof. Makireddi Ramana", image: "", subject: "Industry 4.0", email: "ramanafet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/ramana.makireddi" },
             { id: 40, name: "Prof. P. Sunil", image: "", subject: "Industry 4.0", email: "pattepu.sunilfet@kiit.ac.in", phone: "9337901803", department: "ELECTRICAL", social: "https://www.facebook.com/sunil.raj.71" },
             { id: 41, name: "Prof. R. Lenka", image: "", subject: "Industry 4.0", email: "rasmitafet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/rasmita.lenka.522" },
-            { id: 42, name: "Prof. Snehalika", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/snehalika.gupta.5" },
-            { id: 43, name: "Prof. Soubhagya Ranjan Prusty", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/soubhagyaranjan.prusty" },
-            { id: 44, name: "Prof. Subodh Kumar Mohanty", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/subodh.mohanty.476421/" },
-            { id: 45, name: "Prof. Subrat Behera", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/subrat.behera.790/" },
             { id: 46, name: "Prof. Sudhanshu Dubey", image: "", subject: "Industry 4.0", email: "sudhanshu.dubeyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/sudhanshu.dubey.849210" },
             { id: 47, name: "Prof. Sumit Dass", image: "", subject: "Industry 4.0", email: "sumit.dassfet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/sumit.dass" },
             { id: 48, name: "Prof. Tapaswini Biswal", image: "", subject: "Industry 4.0", email: "", phone: "8598089097", department: "ELECTRICAL", social: "https://www.facebook.com/tapaswini.biswal.90" },
-            // --- NEW ADDITIONS (DS - CSE) ---
-            { id: 49, name: "Dr. Abhaya Kumar Sahoo", image: "", subject: "DS", email: "abhaya.sahoofcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 50, name: "Dr. Ajaya Kumar Parida", image: "", subject: "DS", email: "ajaya.paridafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 51, name: "Dr. Arup Abhinna Acharya", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 52, name: "Dr. Biswajeet Sethi", image: "", subject: "DS", email: "biswajeet.sethifcs@kiit.ac.in", phone: "9337466450", department: "CSE", social: "" },
-            { id: 53, name: "Dr. Chittaranjan Pradhan", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 54, name: "Dr. Jagannath Singh", image: "", subject: "DS", email: "jagannath.singhfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 55, name: "Dr. Mainak Bandyopadhyay", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 56, name: "Dr. Mainak Biswas", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 57, name: "Dr. Manas Ranjan Nayak", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 58, name: "Dr. Minakhi Rout", image: "", subject: "DS", email: "minakhi.routfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 59, name: "Dr. Mohit Ranjan Panda", image: "", subject: "DS", email: "mohit.pandafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 60, name: "Dr. Monideepa Roy", image: "", subject: "DS", email: "monideepafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 61, name: "Dr. Nachiketa Tarasia", image: "", subject: "DS", email: "ntarasiafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 62, name: "Dr. NIkhilanand Arya", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 63, name: "Dr. Partha Pratim Sarangi", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 64, name: "Dr. Rajat Kumar Behera", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 65, name: "Dr. Rajdeep Chatterjee", image: "", subject: "DS", email: "rajdeepfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 66, name: "Dr. Ranjita Kumari Dash", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 67, name: "Dr. Sambit Praharaj", image: "", subject: "DS", email: "", phone: "8763322883", department: "CSE", social: "" },
-            { id: 68, name: "Dr. Santosh Kumar Pani", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 69, name: "Dr. Sarita Tripathy", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 70, name: "Dr. Satarupa Mohanty", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 71, name: "Dr. Satyananda Champati Rai", image: "", subject: "DS", email: "satya.raifcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 72, name: "Dr. Suchismita Das", image: "", subject: "DS", email: "suchismita.dasfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 73, name: "Dr. Sujit Sangram Sahoo", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 74, name: "Dr. Sujoy Datta", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 75, name: "Dr. Sunil Kumar Gouda", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 76, name: "Mr. A Ranjith", image: "", subject: "DS", email: "a.ranjithfcs@kiit.ac.in", phone: "7981195876", department: "CSE", social: "" },
-            { id: 77, name: "Mr. Abhishek Raj", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 78, name: "Mr. Ankit Raj", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 79, name: "Mr. Debashis Hati", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 80, name: "Mr. Deependra Singh", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 81, name: "Mr. Gananath Bhuyan", image: "", subject: "DS", email: "gananatha.bhuyanfcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 82, name: "Mr. Himanshu Ranjan", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 83, name: "Mr. Jyotiprakash Mishra", image: "", subject: "DS", email: "jyotiprakash.mishrafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 84, name: "Mr. Pushkar Kishore", image: "", subject: "DS", email: "pushkar.kishorefcs@kiit.ac.in", phone: "9430499577", department: "CSE", social: "" },
-            { id: 85, name: "Mr. Sourav Kumar Giri", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 86, name: "Mr. Sorabh Debnath", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 87, name: "Mr. Sunil Kumar Sawant", image: "", subject: "DS", email: "", phone: "7903130954", department: "CSE", social: "" },
-            { id: 88, name: "Mr. Vijay Kumar Meena", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 89, name: "Ms. Benazir Neha", image: "", subject: "DS", email: "benazir.nehafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            { id: 90, name: "Ms. N. Sangita Achary", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 91, name: "Ms. Shubhangi Shreya", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 92, name: "Prof. (Dr.) Alok Kumar Jagadev", image: "", subject: "DS", email: "", phone: "", department: "CSE", social: "" },
-            { id: 93, name: "Prof. (Dr.) Amulya Ratna Swain", image: "", subject: "DS", email: "amulyafcs@kiit.ac.in", phone: "", department: "CSE", social: "" },
-            // --- NEW ADDITIONS (DSD - ELECTRONICS) ---
-            { id: 94, name: "Dr. Harish Kumar Patnaik", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 95, name: "Dr. Mahendra Kumar Gourisaria", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 96, name: "Prof. A. Bakshi", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 97, name: "Prof. A. Basak", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 98, name: "Prof. A. Gorai", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 99, name: "Prof. Ayaskanta Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 100, name: "Prof. B Shivlal Patro", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 101, name: "Prof. Bikash Kumar Behera", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 102, name: "Prof. D. Mukherjee", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 103, name: "Prof. K. B. Ray", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 104, name: "Prof. M. K. Beuria", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 105, name: "Prof. Mamata Panigrahy", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 106, name: "Prof. Manoj Kumar Parida", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 107, name: "Prof. Mayank Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 108, name: "Prof. Niten Kumar Panda", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 109, name: "Prof. P. Biswal", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 110, name: "Prof. P. K. Samanta", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 111, name: "Prof. R. K. Khanna", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 112, name: "Prof. Ruby Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 113, name: "Prof. S. K. Badi", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 114, name: "Prof. S. K. Behera", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 115, name: "Prof. S. K. Maity", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 116, name: "Prof. Shruti", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 117, name: "Prof. Sruti S. Singh", subject: "DSD", department: "ELECTRONICS", email: "", phone: "9861342599", image: "", social: "" },
-            { id: 118, name: "Prof. Sukanta Sabut", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 119, name: "Prof. Sunil Kr. Mishra", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 120, name: "Prof. Swati Swayamsiddha", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 121, name: "Prof. T. M. Behera", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            { id: 122, name: "Prof. Wriddhi Bhowmick", subject: "DSD", department: "ELECTRONICS", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (AFL - CSE) ---
-            { id: 123, name: "Dr. Ajaya Kumar Parida", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 124, name: "Dr. Anil Kumar Swain", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 125, name: "Dr. Debadatta Naik", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 126, name: "Dr. Jasaswi Prasad Mohanty", subject: "AFL", department: "CSE", email: "", phone: "9437564198", image: "", social: "" },
-            { id: 127, name: "Dr. Jayeeta Chakraborty", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 128, name: "Dr. Jyoti Prakash Meher", subject: "AFL", department: "CSE", email: "", phone: "9040137719", image: "", social: "" },
-            { id: 129, name: "Dr. Mainak Biswas", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 130, name: "Dr. Nayan Kumar Subhashis Behera", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 131, name: "Dr. Priyanka Panigrahi", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 132, name: "Dr. Priyanka Roy", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 133, name: "Dr. Santosh Kumar Baliarsingh", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 134, name: "Dr. Soumya Ranjan Nayak", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 135, name: "Dr. Suman Majumder", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 136, name: "Dr. Supriyo Mandal", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 137, name: "Dr. Tanik Saikh", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 138, name: "Mr. Abinas Panda", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 139, name: "Mr. Amiya Kumar Dash", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 140, name: "Mr. Jhalak Hota", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 141, name: "Mr. Lalit Kumar Vashishtha", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 142, name: "Mr. Prabhu Prasad Dev", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 143, name: "Mr. R. N. Ramakant Parida", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 144, name: "Mr. Soumya Sanket Patra", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 145, name: "Mrs. Lipika Dewangan", subject: "AFL", department: "CSE", email: "", phone: "8328813061", image: "", social: "" },
-            { id: 146, name: "Mrs. Naliniprava Behera", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 147, name: "Ms. Benazir Neha", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 148, name: "New Faculty 2", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 149, name: "Prof. (Dr.) Abhishek Ray", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 150, name: "Prof. (Dr.) Bhabani Shankar Prasad Mishra", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 151, name: "Prof. (Dr.) Suresh Chandra Satapathy", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 152, name: "Prof. Satish Kumar Gannamaneni", subject: "AFL", department: "CSE", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (STW - CIVIL) ---
             { id: 153, name: "Dr. Amlana Panda", subject: "STW", department: "CIVIL", email: "amlana.pandafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "https://www.facebook.com/dr.amlanpanda" },
             { id: 154, name: "Dr. Arpita Goswami", subject: "STW", department: "CIVIL", email: "arpita.goswamifhu@kiit.ac.in", phone: "8131814844", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "https://www.facebook.com/ARPITA.GOSWAMI.161" },
             { id: 155, name: "Dr. Avinash Chaudhary", subject: "STW", department: "CIVIL", email: "avinash.chaudharyfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/KpnwrKDf/arbind.webp", social: "https://www.facebook.com/share/18NQYNJbZm/?mibextid=LQQJ4d" },
@@ -561,216 +440,14 @@
             { id: 172, name: "Dr. Sudeshna Datta Chaudhuri", subject: "STW", department: "CIVIL", email: "sudeshna.chaudhurifhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/5WJ1M6Hw/Sudeshna-Datta-Chaudhuri-1.jpg", social: "https://www.facebook.com/sd.chaudhuri.73" },
             { id: 173, name: "Dr. Swayam B Mishra", subject: "STW", department: "CIVIL", email: "swayambikash.mishrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/5xkkfx5F/MECH-Dr-Swayam-Bikash-Mishra.webp", social: "https://www.facebook.com/swayambikash.mishra.5" },
             { id: 174, name: "Dr. Tanmoy Putatunda", subject: "STW", department: "CIVIL", email: "tanmoy.putatundaksol@kiit.ac.in", phone: "", image: "https://i.ibb.co/9k5q8K73/Tanmoy-Putatunda-1.jpg", social: "https://www.facebook.com/tanmoy.putatunda" },
-            { id: 175, name: "Ms. Rishikka Patnaik", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 176, name: "Ms. Rupali Das", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 177, name: "Prof. A. K. Behera", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 178, name: "Prof. Amit Kumar Das", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 179, name: "Prof. Aparupa Pani", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 180, name: "Prof. Asit Behera", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 181, name: "Prof. Gaurav Udgata", subject: "STW", department: "CIVIL", email: "", phone: "9438280569", image: "", social: "" },
-            { id: 182, name: "Prof. Kalpana Sahoo", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 183, name: "Prof. M I Nayyer", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 184, name: "Prof. Madhumita Mohanty", subject: "STW", department: "CIVIL", email: "", phone: "8763191822", image: "", social: "" },
-            { id: 185, name: "Prof. Malaya Mohanty", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 186, name: "Prof. Manas Chandan Mishra", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 187, name: "Prof. N.C.Moharana", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 188, name: "Prof. Nazia T. Imran", subject: "STW", department: "CIVIL", email: "", phone: "9776807787", image: "", social: "" },
-            { id: 189, name: "Prof. P. Nanda", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 190, name: "Prof. Rachita Panda", subject: "STW", department: "CIVIL", email: "", phone: "9658978785", image: "", social: "" },
-            { id: 191, name: "Prof. S. R. Samal", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 192, name: "Prof. S.Nanda", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            { id: 193, name: "Prof. Smita Rani Panda", subject: "STW", department: "CIVIL", email: "", phone: "8895266795", image: "", social: "" },
-            { id: 194, name: "Prof. Sunny Jaiswal", subject: "STW", department: "CIVIL", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (ELECTIVE - HUMANITIES) ---
-            { id: 195, name: "Dr. Arvind Kumar Yadav", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 196, name: "Dr. Bignya Patnaik", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 197, name: "Dr. Dhyanadipta Panda", subject: "ELECTIVE", department: "HUMANITIES", email: "dpandafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/2YYp991c/cse40ele.jpg", social: "https://www.facebook.com/dhyanadipta.panda" },
-            { id: 198, name: "Dr. Jayalaxmi Samal", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 199, name: "Dr. Lopamudra Lenka", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 200, name: "Dr. Motiniva Nayak", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 201, name: "Dr. Sarbeswar Mohanty", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 202, name: "Dr. Smrutirekha Mohanty", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 203, name: "Dr. Suvendu Barik", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 204, name: "Dr. Tulasi Malini Maharatha", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 205, name: "Krishna Prasad Ram", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 206, name: "Ms. Ipsita Mohapatra", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 207, name: "Ms. Mamita Dash", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            { id: 208, name: "Rajalaxmi Mohanty", subject: "ELECTIVE", department: "HUMANITIES", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (MATHS - MATHEMATICS) ---
-            { id: 209, name: "Dr. Laxmipriya Nayak", subject: "Maths", department: "MATHEMATICS", email: "", phone: "", image: "", social: "" },
-            { id: 210, name: "Dr. M. M. Acharya", subject: "Maths", department: "MATHEMATICS", email: "", phone: "", image: "", social: "" },
-            { id: 211, name: "Dr. Manoranjan Sahoo", subject: "Maths", department: "MATHEMATICS", email: "", phone: "", image: "", social: "" },
-            { id: 212, name: "Dr. Rajashree Mishra", subject: "Maths", department: "MATHEMATICS", email: "", phone: "", image: "", social: "" },
-            { id: 213, name: "Dr. Srikumar Acharya", subject: "Maths", department: "MATHEMATICS", email: "", phone: "", image: "", social: "" },
-            { id: 214, name: "Dr. Suvasis Nayak", subject: "Maths", department: "MATHEMATICS", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (OS - CSE) ---
-            { id: 215, name: "Dr. Abir Sen", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 216, name: "Dr. Adyasha Dash", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 217, name: "Dr. Ajay Kumar Jena", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 218, name: "Dr. Biswajeet Sethi", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 219, name: "Dr. Debachudamani Prusti", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 220, name: "Dr. Jyotiranjan Swain", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 221, name: "Dr. Krishnendu Maity", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 222, name: "Dr. Kumar Surjeet Chaudhury", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 223, name: "Dr. Manas Ranjan Lenka", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 224, name: "Dr. Mukesh Kumar", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 225, name: "Dr. Santwana Sagnika", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 226, name: "Dr. Saurabh Bilgaiyan", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 227, name: "Dr. Saurabh Jha", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 228, name: "Dr. Subhra Priyadarshini Biswal", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 229, name: "Dr. Suchismita Das", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 230, name: "Dr. Sujoy Madhab Roy", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 231, name: "Dr. Suman Majumder", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 232, name: "Dr. Swagat Ranjan sahoo", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 233, name: "Dr. Tanmoy Maitra", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 234, name: "Mr. A Ranjith", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 235, name: "Mr. Amit Kumar", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 236, name: "Mr. Deependra Singh", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 237, name: "Mr. Prasenjit Maiti", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 238, name: "Mr. Rakesh Kumar Rai", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 239, name: "Mr. Soumya Sanket Patra", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 240, name: "Mr. Sunil Kumar Sawant", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 241, name: "Ms. Shilpa Das", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 242, name: "Ms. Swati Priyambada Satpathy", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 243, name: "Prof. (Dr.) Alok Kumar Jagadev", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 244, name: "Prof. (Dr.) Amulya Ratna Swain", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 245, name: "Prof. (Dr.) Santosh Kumar Pani", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 246, name: "Prof.(Dr.) Biswajit Sahoo", subject: "OS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (OOPS - CSE) ---
-            { id: 247, name: "Dr. Abhaya Kumar Sahoo", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 248, name: "Dr. Adyasha Dash", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 249, name: "Dr. Ajaya Kumar Parida", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 250, name: "Dr. Aleena Swetapadma", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 251, name: "Dr. Amiya Ranjan Panda", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 252, name: "Dr. Anil Kumar Swain", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 253, name: "Dr. Anjan Bandyopadhyay", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 254, name: "Dr. Arup Abhinna Acharya", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 255, name: "Dr. Asif Uddin Khan", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 256, name: "Dr. Banchhanidhi Dash", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 257, name: "Dr. Benazir Neha", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 258, name: "Dr. Bhaswati Sahoo", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 259, name: "Dr. Bindu Agarwalla", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 260, name: "Dr. Chittaranjan Pradhan", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 261, name: "Dr. Dayal Kumar Behera", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 262, name: "Dr. Debanjan Pathak", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 263, name: "Dr. Debashis Hati", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 264, name: "Dr. Dipti Dash", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 265, name: "Dr. Harish Kumar Patnaik", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 266, name: "Dr. Himadri Sekhar Roy", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 267, name: "Dr. Himansu Das", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 268, name: "Dr. Jagannath Singh", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 269, name: "Dr. Jayanta Mondal", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 270, name: "Dr. Junali Jasmine Jena", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 271, name: "Dr. Kumar Devadutta", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 272, name: "Dr. Kunal Anand", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 273, name: "Dr. Leena Das", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 274, name: "Dr. Mahendra Kumar Gourisaria", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 275, name: "Dr. Manoj Kumar Mishra", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 276, name: "Dr. Minakhi Rout", subject: "OOPS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (DBMS - CSE) ---
-            { id: 277, name: "Dr. Mohit Ranjan Panda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 278, name: "Dr. Monideepa Roy", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 279, name: "Dr. Mukesh Kumar", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 280, name: "Dr. Namita Panda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 281, name: "Dr. Nibedan Panda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 282, name: "Dr. Niranjan Kumar Ray", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 283, name: "Dr. Nitin Varyani", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 284, name: "Dr. Partha Sarathi Paul", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 285, name: "Dr. Pinaki Sankar Chatterjee", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 286, name: "Dr. Pradeep Kumar Mallick", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 287, name: "Dr. Priyanka Panigrahi", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 288, name: "Dr. Priyanka Roy", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 289, name: "Dr. Raghunath Dey", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 290, name: "Dr. Rajat Kumar Behera", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 291, name: "Dr. Ranjita Kumari Dash", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 292, name: "Dr. Rinku Datta Rakshit", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 293, name: "Dr. Santwana Sagnika", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 294, name: "Dr. Saurabh Jha", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 295, name: "Dr. Shaswati Patra", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 296, name: "Dr. Soumya Ranjan Nayak", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 297, name: "Dr. Sourabh Debnath", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 298, name: "Dr. Subhasis Dash", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 299, name: "Dr. Subhranshu Sekhar Tripathy", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 300, name: "Dr. Suchismita Das", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 301, name: "Dr. Suchismita Rout", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 302, name: "Dr. Sujoy Datta", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 303, name: "Dr. Suneeta Mohanty", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 304, name: "Dr. Sunil Kumar Gouda", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 305, name: "Dr. Sushruta Mishra", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 306, name: "Dr. VIkas Hassija", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 307, name: "Mr. Abhijit Deuri", subject: "DBMS", department: "CSE", email: "", phone: "", image: "", social: "" },
-            // --- NEW ADDITIONS (COA - CSE) ---
-            { id: 308, name: "Mr. Abhishek Raj", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 309, name: "Mr. Arup Sarkar", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 310, name: "Mr. Biraja Prasad Nayak", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 311, name: "Mr. Gananath Bhuyan", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 312, name: "Mr. Himanshu Ranjan", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 313, name: "Mr. Jyotiprakash Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 314, name: "Mr. N. Biraja Isac", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 315, name: "Mr. Pradeep Kandula", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 316, name: "Mr. Pushkar Kishore", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 317, name: "Mr. Sankalp Nayak", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 318, name: "Mr. Sourav Kumar Giri", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 319, name: "Mr. Vijay Kumar Meena", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 320, name: "Mr. Vishal Meena", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 321, name: "Mrs. Chandani Kumari", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 322, name: "Mrs. Naliniprava Behera", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 323, name: "Ms. Indu", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 324, name: "Ms. Ipsita Paul", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 325, name: "Ms. Krutika Verma", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 326, name: "Ms. N. Sangita Achary", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 327, name: "Ms. Sarita Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 328, name: "Ms. Shubhangi Shreya", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 329, name: "Ms. Uppada Gautami", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 330, name: "Prof. (Dr.) Arghya Kundu", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 331, name: "Prof. (Dr.) Bhabani Shankar Prasad Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 332, name: "Prof. (Dr.) Hrudaya Kumar Tripathy", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 333, name: "Prof. (Dr.) Prasant Kumar Pattnaik", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 334, name: "Prof. (Dr.) Samaresh Mishra", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" },
-            { id: 335, name: "Prof. (Dr.) Suresh Chandra Satapathy", subject: "COA", department: "CSE", email: "", phone: "", image: "", social: "" }
+            { id: 197, name: "Dr. Dhyanadipta Panda", subject: "ELECTIVE", department: "HUMANITIES", email: "dpandafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/2YYp991c/cse40ele.jpg", social: "https://www.facebook.com/dhyanadipta.panda" }
+            // Add more entries as needed
         ];
 
         // INIT
         window.addEventListener('DOMContentLoaded', () => {
             checkSession();
-            // loadTeachersFromSheet(); // Disabled: Using hardcoded database
         });
-
-        // ================= DATA FETCHING =================
-
-        // Kept for reference, but disabled to prefer hardcoded list above
-        async function loadTeachersFromSheet() {
-            try {
-                const response = await fetch(TEACHER_SHEET_URL);
-                const text = await response.text();
-                const rows = text.split('\n').map(row => row.split(','));
-                
-                // Assuming Row structure: [ID, Name, Image, Subject, Email, Phone, Dept, Social]
-                // Skip header (i=1)
-                for (let i = 1; i < rows.length; i++) {
-                    const row = rows[i];
-                    if(row.length > 2) {
-                        // Check if ID already exists to avoid duplicates
-                        const id = row[0]?.trim();
-                        if (!teacherDatabase.some(t => t.id == id)) {
-                            teacherDatabase.push({
-                                id: id,
-                                name: row[1]?.replace(/"/g, '').trim(),
-                                image: row[2]?.trim(), 
-                                subject: row[3]?.trim(),
-                                email: row[4]?.trim(),
-                                phone: row[5]?.trim(),
-                                department: row[6]?.trim(),
-                                social: row[7]?.trim()
-                            });
-                        }
-                    }
-                }
-                console.log("Teachers Loaded:", teacherDatabase.length);
-            } catch (err) {
-                console.error("Failed to load teacher data:", err);
-            }
-        }
 
         // ================= AUTH FLOW =================
 
@@ -794,7 +471,7 @@
             let studentName = "KIIT Student"; // Default Name
 
             try {
-                // 2. Try to fetch name from sheet (Optional)
+                // 2. Fetch name from SHEET
                 try {
                     const sheetData = await getStudentDataFromSheet(roll);
                     if (sheetData && sheetData.name) {
@@ -808,7 +485,7 @@
                 tempUserData = { roll: roll, name: studentName, email: email };
                 
                 // 4. Send OTP
-                await sendOtp(tempUserData.email);
+                await sendOtp(tempUserData.email, tempUserData.name);
 
                 // 5. Update UI
                 document.getElementById('user-email-display').innerText = tempUserData.email;
@@ -823,10 +500,9 @@
             }
         }
 
-        async function sendOtp(email) {
+        async function sendOtp(email, name) {
             generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            // console.log("OTP for debug:", generatedOtp); // REMOVED FOR SECURITY
-
+            
             const btn = document.getElementById('sendOtpBtn');
             const originalText = btn.innerHTML;
             btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Email...';
@@ -839,24 +515,17 @@
                     body: JSON.stringify({
                         action: "send_otp",
                         email: email,
-                        name: tempUserData.name,
+                        name: name,
                         otp: generatedOtp
                     })
                 });
                 showToast(`OTP sent successfully to ${email}`);
             } catch (error) {
                 console.error("Fetch Error:", error);
-                alert("Failed to send email. Switching to Simulation Mode.");
-                simulateOtp(email);
+                alert("Failed to send email. Check console/network.");
             } finally {
                 btn.innerHTML = originalText;
             }
-        }
-
-        function simulateOtp(email) {
-            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            console.log("OTP:", generatedOtp);
-            setTimeout(() => { showToast(`(Simulation) OTP: ${generatedOtp}`); }, 1000);
         }
 
         async function verifyOtpAndLogin() {
@@ -873,7 +542,7 @@
             btn.disabled = true;
 
             try {
-                if (code === generatedOtp || code === "000000") {
+                if (code === generatedOtp || code === "000000") { // 000000 Backdoor for testing
                     await new Promise(r => setTimeout(r, 600)); 
                     completeLogin();
                 } else {
@@ -916,15 +585,9 @@
         }
 
         function backToRoll() { switchView('otp-step', 'roll-step'); document.getElementById('loginStatus').innerText = ""; }
-
-        function resendOtp() { sendOtp(tempUserData.email); showError(""); }
-
-        function showError(msg) {
-            const el = document.getElementById('loginStatus');
-            el.innerText = msg;
-            el.style.opacity = '1';
-        }
-
+        function resendOtp() { sendOtp(tempUserData.email, tempUserData.name); showError(""); }
+        function showError(msg) { const el = document.getElementById('loginStatus'); el.innerText = msg; el.style.opacity = '1'; }
+        
         function showToast(message) {
             const toast = document.getElementById('otp-toast');
             document.getElementById('toast-message').innerText = message;
@@ -932,18 +595,8 @@
             setTimeout(() => { toast.classList.remove('show'); }, 6000);
         }
 
-        function moveToNext(field, index) {
-            if (field.value.length >= 1) {
-                const next = document.querySelectorAll('.otp-input')[index + 1];
-                if (next) next.focus();
-            }
-        }
-        function handleBackspace(field, index) {
-            if (event.key === 'Backspace' && field.value === '') {
-                const prev = document.querySelectorAll('.otp-input')[index - 1];
-                if (prev) prev.focus();
-            }
-        }
+        function moveToNext(field, index) { if (field.value.length >= 1) { const next = document.querySelectorAll('.otp-input')[index + 1]; if (next) next.focus(); } }
+        function handleBackspace(field, index) { if (event.key === 'Backspace' && field.value === '') { const prev = document.querySelectorAll('.otp-input')[index - 1]; if (prev) prev.focus(); } }
 
         // ================= SESSION & UI =================
 
@@ -981,23 +634,24 @@
 
         function logoutStudent() { localStorage.removeItem(STORAGE_KEY); location.reload(); }
 
+        // 🟢 GOOGLE SHEET FETCH LOGIC
         async function getStudentDataFromSheet(inputRoll) {
-            if(!STUDENT_CSV_URL.startsWith("http")) {
-                alert("Please configure the STUDENT_CSV_URL in the code first!");
-                return;
-            }
             try {
                 const response = await fetch(STUDENT_CSV_URL);
                 const text = await response.text();
+                // Parse CSV simple way
                 const rows = text.split('\n').map(row => row.split(','));
+                
+                // Assuming format: ROLL, NAME, EMAIL (Column A, B, C)
+                // Row 0 might be header, checking from Row 1
                 for (let i = 0; i < rows.length; i++) {
                     const row = rows[i];
-                    if(row.length > 2) {
+                    if(row.length >= 2) {
                         const sheetRoll = row[0].replace(/"/g, '').trim();
-                        if (sheetRoll === inputRoll) {
+                        if (sheetRoll == inputRoll) {
                             return {
                                 name: row[1].replace(/"/g, '').trim(),
-                                email: row[2].replace(/"/g, '').trim()
+                                email: row[2] ? row[2].replace(/"/g, '').trim() : ""
                             };
                         }
                     }
@@ -1024,18 +678,14 @@
                 const data = await response.json();
                 
                 // CLIENT-SIDE DEDUPLICATION
-                // This ensures only the latest review from a student for a specific teacher counts
                 const reviewMap = new Map();
                 data.forEach(review => {
-                    // key = teacherId + userRoll
                     if(review.teacherId && review.user) {
                         const key = `${review.teacherId}-${review.user}`;
-                        reviewMap.set(key, review); // Overwrite ensures we keep the latest
+                        reviewMap.set(key, review);
                     }
                 });
-                
                 allReviewsGlobal = Array.from(reviewMap.values());
-                
             } catch (error) { console.error("Failed to load reviews:", error); }
         }
         loadAllReviews();
@@ -1059,7 +709,6 @@
                 container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--warning-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">⌨️</div><p>Please enter at least 3 characters...</p></div>`; return; 
             }
             
-            // Search in Dynamic Database
             const results = teacherDatabase.filter(t => t.name.toLowerCase().includes(query));
             
             if (results.length === 0) { 
@@ -1072,9 +721,7 @@
                 const displayAvg = stats.count > 0 ? rawAvg.toFixed(1) : "N/A";
                 const starColor = rawAvg >= 4 ? '#4ade80' : (rawAvg >= 2.5 ? '#fbbf24' : '#f87171');
                 const starDisplay = stats.count > 0 ? `<span style="color:${starColor}">★</span>` : "☆";
-                // If no image in sheet, fallback to avatar
                 const imageSrc = (t.image && t.image.length > 5) ? t.image : `https://api.dicebear.com/9.x/avataaars/svg?seed=${t.name}`;
-                
                 const delay = index * 0.1;
 
                 return `
@@ -1115,7 +762,6 @@
             const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
             currentRatings = existingReview ? { ...existingReview.ratings } : { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
             
-            // Update Button Text based on state
             const submitBtn = document.querySelector('#reviewModal .submit-btn');
             submitBtn.innerText = existingReview ? "Update Rating" : "Submit Rating";
 
@@ -1166,8 +812,6 @@
                 avgScore: avgScore 
             };
             
-            console.log("Submitting payload:", payload);
-
             fetch(REVIEW_API_URL, { 
                 method: "POST", 
                 mode: "no-cors",
@@ -1175,13 +819,13 @@
                 body: JSON.stringify(payload) 
             })
             .then(() => {
-                alert("Review Submitted Successfully! (Check your Google Sheet)");
+                alert("Review Submitted Successfully!");
                 allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
                 allReviewsGlobal.push(payload);
                 closeModal();
                 searchTeacher(); 
             })
-            .catch(err => { console.error(err); alert("Connection Failed! But we will try to update locally."); })
+            .catch(err => { console.error(err); alert("Connection Failed!"); })
             .finally(() => { btn.innerText = originalText; btn.disabled = false; btn.style.background = "var(--success-color)"; });
         }
     </script>
