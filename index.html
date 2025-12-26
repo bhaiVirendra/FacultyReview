@@ -1022,7 +1022,20 @@
             try {
                 const response = await fetch(REVIEW_API_URL);
                 const data = await response.json();
-                allReviewsGlobal = data;
+                
+                // CLIENT-SIDE DEDUPLICATION
+                // This ensures only the latest review from a student for a specific teacher counts
+                const reviewMap = new Map();
+                data.forEach(review => {
+                    // key = teacherId + userRoll
+                    if(review.teacherId && review.user) {
+                        const key = `${review.teacherId}-${review.user}`;
+                        reviewMap.set(key, review); // Overwrite ensures we keep the latest
+                    }
+                });
+                
+                allReviewsGlobal = Array.from(reviewMap.values());
+                
             } catch (error) { console.error("Failed to load reviews:", error); }
         }
         loadAllReviews();
@@ -1102,6 +1115,10 @@
             const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
             currentRatings = existingReview ? { ...existingReview.ratings } : { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
             
+            // Update Button Text based on state
+            const submitBtn = document.querySelector('#reviewModal .submit-btn');
+            submitBtn.innerText = existingReview ? "Update Rating" : "Submit Rating";
+
             const formContainer = document.getElementById('ratingForm');
             formContainer.innerHTML = '';
             criteriaNames.forEach(c => {
