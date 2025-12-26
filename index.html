@@ -250,10 +250,10 @@
                     
                     // Restore Global Variables
                     loggedInUser = userData.roll;
-                    isVerifiedUser = userData.isVerified;
+                    isVerifiedUser = true; // Always true as requested
 
                     // Update UI (Skip Login Screen)
-                    updateDashboardUI(userData.name, userData.email, userData.isVerified);
+                    updateDashboardUI(userData.name, userData.email, true);
                 } catch (e) {
                     console.error("Session parse error", e);
                     localStorage.removeItem(STORAGE_KEY);
@@ -296,7 +296,6 @@
 
                 if (studentData) {
                     // FOUND IN SHEET -> VERIFIED
-                    isVerifiedUser = true;
                     sessionData = {
                         roll: roll,
                         name: studentData.name,
@@ -304,36 +303,37 @@
                         isVerified: true
                     };
                 } else {
-                    // NOT FOUND -> NOT VERIFIED
-                    isVerifiedUser = false;
+                    // NOT FOUND -> STILL ALLOWED (Universal Access)
                     sessionData = {
                         roll: roll,
-                        name: "Student",
-                        email: "N/A",
-                        isVerified: false
+                        name: "Student " + roll,
+                        email: "Guest Access",
+                        isVerified: true
                     };
                 }
+                
+                isVerifiedUser = true; // Globally allow access
 
                 // --- NEW: SAVE TO LOCAL STORAGE ---
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
 
                 // 5. UPDATE UI
-                updateDashboardUI(sessionData.name, sessionData.email, sessionData.isVerified);
+                updateDashboardUI(sessionData.name, sessionData.email, true);
 
             } catch (error) {
                 console.error("Critical error:", error);
                 // Offline Fallback
                 loggedInUser = roll;
-                isVerifiedUser = false;
+                isVerifiedUser = true;
                 
                 const offlineData = {
                     roll: roll,
-                    name: "Student",
-                    email: "N/A",
-                    isVerified: false
+                    name: "Student " + roll,
+                    email: "Offline Mode",
+                    isVerified: true
                 };
                 localStorage.setItem(STORAGE_KEY, JSON.stringify(offlineData));
-                updateDashboardUI("Student", "N/A", false);
+                updateDashboardUI("Student " + roll, "Offline", true);
             }
         }
 
@@ -347,13 +347,8 @@
             document.getElementById('p-email').innerText = email;
             const statusEl = document.getElementById('p-status');
 
-            if (isVerified) {
-                statusEl.innerText = "Verified ✅";
-                statusEl.style.color = "var(--success-color)";
-            } else {
-                statusEl.innerText = "Not Verified ❌";
-                statusEl.style.color = "var(--error-color)";
-            }
+            statusEl.innerText = "Authorized ✅";
+            statusEl.style.color = "var(--success-color)";
         }
 
         // --- NEW: LOGOUT FUNCTION ---
@@ -500,7 +495,8 @@
         ];
 
         function openReviewModal(id, name) {
-            if (!isVerifiedUser) { alert("Access Denied: Please verify your account with Roll Number first!"); return; }
+            // ALLOW ALL USERS - No Verification Check
+            
             document.getElementById('modalTeacherName').innerText = name;
             document.getElementById('currentTeacherId').value = id;
             
@@ -569,9 +565,8 @@
             .then(data => {
                 if(data.result === "success") {
                     alert("Review Saved Successfully!");
-                    // Remove old review locally if it exists (so we don't have duplicates in RAM)
+                    // Update local cache
                     allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
-                    // Add new/updated review
                     allReviewsGlobal.push(payload);
                     closeModal();
                     searchTeacher(); // Refresh UI
