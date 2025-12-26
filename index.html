@@ -364,10 +364,10 @@
 
     <script>
         /* ================= CONFIGURATION ================= */
-        // 🔴 STUDENT CSV LINK (YOUR GOOGLE SHEET)
+        // 🔴 STUDENT CSV LINK
         const STUDENT_CSV_URL = "https://docs.google.com/spreadsheets/d/1E0CwkNuNThtR_Zdb17IkpMTabQJWyfrhO5On8xPwkuw/export?format=csv";
         
-        // 🔴 APP SCRIPT LINK (FOR OTP & REVIEWS)
+        // 🔴 APP SCRIPT LINK
         const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbwpdapMn2Fxl_EZA2E9v-eSOAoeSl-MS2z87gFnjTnz5aGdlQcByM4y8dhEdw9R0tOVvQ/exec";
         
         const STORAGE_KEY = 'kiit_user_session';
@@ -378,7 +378,7 @@
         let tempUserData = null;
         let generatedOtp = null;
         
-        // Pre-populated teacher database (Full List)
+        // Pre-populated teacher database
         let teacherDatabase = [
             { id: 1, name: "Dr. Anita Nayak", image: "", subject: "Maths", email: "anita.nayakfma@kiit.ac.in", phone: "9861402163", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100031911081563" },
             { id: 2, name: "Dr. Arun Kumar Gupta", image: "", subject: "Maths", email: "arun.guptafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/arunkumar.gupta.35325074" },
@@ -441,7 +441,6 @@
             { id: 173, name: "Dr. Swayam B Mishra", subject: "STW", department: "CIVIL", email: "swayambikash.mishrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/5xkkfx5F/MECH-Dr-Swayam-Bikash-Mishra.webp", social: "https://www.facebook.com/swayambikash.mishra.5" },
             { id: 174, name: "Dr. Tanmoy Putatunda", subject: "STW", department: "CIVIL", email: "tanmoy.putatundaksol@kiit.ac.in", phone: "", image: "https://i.ibb.co/9k5q8K73/Tanmoy-Putatunda-1.jpg", social: "https://www.facebook.com/tanmoy.putatunda" },
             { id: 197, name: "Dr. Dhyanadipta Panda", subject: "ELECTIVE", department: "HUMANITIES", email: "dpandafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/2YYp991c/cse40ele.jpg", social: "https://www.facebook.com/dhyanadipta.panda" }
-            // Add more entries as needed
         ];
 
         // INIT
@@ -677,15 +676,9 @@
                 const response = await fetch(REVIEW_API_URL);
                 const data = await response.json();
                 
-                // CLIENT-SIDE DEDUPLICATION
-                const reviewMap = new Map();
-                data.forEach(review => {
-                    if(review.teacherId && review.user) {
-                        const key = `${review.teacherId}-${review.user}`;
-                        reviewMap.set(key, review);
-                    }
-                });
-                allReviewsGlobal = Array.from(reviewMap.values());
+                // LOAD ALL REVIEWS (Allow duplicates for multiple entries)
+                allReviewsGlobal = data;
+                
             } catch (error) { console.error("Failed to load reviews:", error); }
         }
         loadAllReviews();
@@ -759,19 +752,18 @@
             document.getElementById('modalTeacherName').innerText = name;
             document.getElementById('currentTeacherId').value = id;
             
-            const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
-            currentRatings = existingReview ? { ...existingReview.ratings } : { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+            // 🔴 CHANGED: ALWAYS RESET for New Review
+            currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
             
             const submitBtn = document.querySelector('#reviewModal .submit-btn');
-            submitBtn.innerText = existingReview ? "Update Rating" : "Submit Rating";
+            submitBtn.innerText = "Submit Rating"; // Always Submit, never Update
 
             const formContainer = document.getElementById('ratingForm');
             formContainer.innerHTML = '';
             criteriaNames.forEach(c => {
                 let starsHtml = '';
                 for(let i=1; i<=5; i++) { 
-                    const activeClass = i <= currentRatings[c.id] ? 'active' : '';
-                    starsHtml += `<button class="star-btn ${activeClass}" onclick="setStar('${c.id}', ${i}, this)">★</button>`; 
+                    starsHtml += `<button class="star-btn" onclick="setStar('${c.id}', ${i}, this)">★</button>`; 
                 }
                 const group = document.createElement('div');
                 group.className = 'rating-group';
@@ -820,7 +812,7 @@
             })
             .then(() => {
                 alert("Review Submitted Successfully!");
-                allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
+                // Add to local list immediately for display update
                 allReviewsGlobal.push(payload);
                 closeModal();
                 searchTeacher(); 
