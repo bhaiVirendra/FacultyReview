@@ -1148,6 +1148,8 @@
                 ratings: currentRatings, 
                 avgScore: avgScore 
             };
+            
+            console.log("Submitting payload:", payload);
 
             fetch(REVIEW_API_URL, { 
                 method: "POST", 
@@ -1156,7 +1158,7 @@
                 body: JSON.stringify(payload) 
             })
             .then(() => {
-                alert("Review Submitted Successfully!");
+                alert("Review Submitted Successfully! (Check your Google Sheet)");
                 allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
                 allReviewsGlobal.push(payload);
                 closeModal();
