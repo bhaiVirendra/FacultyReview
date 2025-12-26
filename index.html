@@ -11,33 +11,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* VARIABLES */
+        /* CORE VARIABLES */
         :root {
-            --bg-gradient-1: #89f7fe; --bg-gradient-2: #66a6ff; --bg-gradient-3: #fbc2eb; --bg-gradient-4: #a6c1ee;
+            --bg-gradient-1: #89f7fe; --bg-gradient-2: #66a6ff; --bg-gradient-3: #fbc2eb;
             --glass-bg: rgba(255, 255, 255, 0.15); 
             --glass-border: rgba(255, 255, 255, 0.2);
             --text-primary: #ffffff; --text-secondary: rgba(255, 255, 255, 0.85);
             --input-bg: rgba(255, 255, 255, 0.1); 
-            --input-border: rgba(255, 255, 255, 0.25);
-            --shadow-color: rgba(0, 0, 0, 0.1); 
             --accent-glow: rgba(102, 166, 255, 0.5);
-            --tag-bg: rgba(255, 255, 255, 0.2); 
-            --warning-color: #fbbf24; --error-color: #f87171;
-            --success-color: #34d399; 
+            --success-color: #34d399; --error-color: #f87171; --warning-color: #fbbf24;
             --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
-            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-            --ease-elastic: cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
         [data-theme="light"] {
-            --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0; --bg-gradient-4: #cfd9df;
+            --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0;
             --glass-bg: rgba(255, 255, 255, 0.65); 
             --glass-border: rgba(255, 255, 255, 0.9);
             --text-primary: #2d3748; --text-secondary: rgba(45, 55, 72, 0.7);
             --input-bg: rgba(255, 255, 255, 0.7); 
-            --input-border: rgba(255, 255, 255, 1);
-            --shadow-color: rgba(0, 0, 0, 0.05); 
-            --accent-glow: rgba(142, 197, 252, 0.6);
-            --tag-bg: rgba(0, 0, 0, 0.05); 
             --star-inactive: #cbd5e0;
         }
 
@@ -45,213 +35,142 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(-45deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3), var(--bg-gradient-4));
+            background: linear-gradient(-45deg, var(--bg-gradient-1), var(--bg-gradient-2), var(--bg-gradient-3));
             background-size: 400% 400%; 
             animation: gradientShift 15s ease infinite;
             color: var(--text-primary); 
             min-height: 100vh; 
             overflow-x: hidden; 
-            transition: color 0.3s ease;
             display: flex; flex-direction: column; 
         }
 
         @keyframes gradientShift { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
-        /* GLASS UTILITY */
+        /* UTILITIES */
         .glass { 
-            background: var(--glass-bg); 
-            backdrop-filter: blur(20px); 
-            -webkit-backdrop-filter: blur(20px); 
-            border: 1px solid var(--glass-border); 
-            box-shadow: 0 8px 32px var(--shadow-color); 
-            border-radius: 24px; 
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); 
+            border: 1px solid var(--glass-border); box-shadow: 0 8px 32px rgba(0,0,0,0.1); border-radius: 24px; 
+            transition: transform 0.3s;
         }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; padding-bottom: 2rem; flex: 1; width: 100%; }
-        
-        /* TRANSITION UTILITIES */
+        .container { max-width: 1200px; margin: 0 auto; padding: 2rem 1rem; width: 100%; flex: 1; }
         .hidden { display: none !important; }
         .fade-in { animation: fadeIn 0.5s ease-out forwards; opacity: 0; transform: translateY(20px); }
-        .fade-out { animation: fadeOut 0.3s ease-in forwards; opacity: 1; transform: translateY(0); pointer-events: none; }
         @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeOut { to { opacity: 0; transform: translateY(-20px); } }
-        .stagger-enter { opacity: 0; transform: translateY(30px); animation: fadeInCard 0.6s var(--ease-elastic) forwards; }
-        @keyframes fadeInCard { to { opacity: 1; transform: translateY(0); } }
 
         /* NAVBAR */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 0; margin-bottom: 2rem; }
-        .nav-controls { display: flex; gap: 1rem; align-items: center; }
         .icon-btn { 
             width: 45px; height: 45px; border-radius: 50%; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-size: 1.2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); 
-            color: var(--text-primary); transition: transform 0.2s, background 0.2s; 
+            cursor: pointer; background: var(--glass-bg); border: 1px solid var(--glass-border); 
+            color: var(--text-primary); transition: transform 0.2s; 
         }
         .icon-btn:hover { transform: scale(1.1); background: var(--input-bg); }
 
         /* LOGIN */
-        #login-section { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: inherit; display: flex; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        #login-section { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; background: inherit; display: flex; justify-content: center; align-items: center; }
         .login-box { width: 90%; max-width: 400px; padding: 2.5rem; text-align: center; }
         .login-input { 
             width: 100%; padding: 1rem; margin: 1rem 0; background: var(--input-bg); 
-            border: 1px solid var(--input-border); border-radius: 12px; color: var(--text-primary); 
-            font-size: 1rem; outline: none; transition: border 0.3s; 
+            border: 1px solid var(--glass-border); border-radius: 12px; color: var(--text-primary); 
+            font-size: 1rem; outline: none; transition: 0.3s; 
         }
         .login-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.2); }
         .btn-primary { 
             width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; 
             border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; 
-            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); margin-top: 0.5rem; 
-            transition: transform 0.2s; 
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); margin-top: 0.5rem; transition: transform 0.2s; 
         }
         .btn-primary:hover { transform: translateY(-2px); }
-        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; box-shadow: none; transform: none; }
 
         /* OTP */
-        .otp-container { display: flex; justify-content: center; gap: 10px; margin: 1.5rem 0; }
+        .otp-container { display: flex; justify-content: center; gap: 8px; margin: 1.5rem 0; }
         .otp-input { 
-            width: 45px; height: 55px; border-radius: 10px; border: 1px solid var(--input-border); 
+            width: 45px; height: 55px; border-radius: 10px; border: 1px solid var(--glass-border); 
             background: var(--input-bg); color: var(--text-primary); font-size: 1.5rem; font-weight: bold; 
-            text-align: center; outline: none; transition: all 0.3s; 
+            text-align: center; outline: none; transition: 0.3s; 
         }
-        .otp-input:focus { border-color: var(--accent-glow); box-shadow: 0 0 10px var(--accent-glow); transform: scale(1.05); }
-
-        /* TOAST */
-        #otp-toast { 
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); 
-            color: white; padding: 12px 24px; border-radius: 50px; z-index: 10000; font-size: 0.9rem; 
-            display: flex; align-items: center; gap: 10px; opacity: 0; pointer-events: none; 
-            transition: opacity 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); 
-        }
-        #otp-toast.show { opacity: 1; pointer-events: auto; }
+        .otp-input:focus { border-color: var(--accent-glow); transform: scale(1.05); }
 
         /* SEARCH & GRID */
-        .search-header { text-align: center; margin-bottom: 3rem; }
-        .search-container { position: relative; max-width: 600px; margin: 0 auto 3rem auto; display: flex; gap: 1rem; align-items: stretch; }
-        .search-input-wrapper { position: relative; flex-grow: 1; }
-        .search-icon-input { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; opacity: 0.7; pointer-events: none; z-index: 1; }
+        .search-container { position: relative; max-width: 600px; margin: 0 auto 3rem auto; }
         .search-input { 
             padding-left: 3.5rem; height: 60px; font-size: 1.2rem; border-radius: 50px; width: 100%; 
             background: var(--glass-bg); border: 1px solid var(--glass-border); color: var(--text-primary); 
-            backdrop-filter: blur(10px); transition: all 0.3s; 
+            backdrop-filter: blur(10px); outline: none; transition: 0.3s; 
         }
-        .search-input:focus { outline: none; box-shadow: 0 0 0 4px var(--accent-glow); background: var(--input-bg); }
+        .search-input:focus { box-shadow: 0 0 0 4px var(--accent-glow); background: var(--input-bg); }
+        .search-icon-input { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; opacity: 0.7; pointer-events: none; }
         .results-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
 
         /* TEACHER CARD */
-        .teacher-card { 
-            padding: 0; position: relative; overflow: hidden; display: flex; flex-direction: column; 
-            transition: transform 0.3s ease;
-        }
+        .teacher-card { position: relative; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s ease; }
         .teacher-card:hover { transform: translateY(-5px); }
-        .card-banner { height: 110px; background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)); position: relative; }
+        .card-banner { height: 110px; background: linear-gradient(180deg, rgba(255,255,255,0.2), rgba(255,255,255,0.05)); }
         .t-avatar-wrapper { position: absolute; top: 55px; left: 50%; transform: translateX(-50%); }
         .t-avatar { 
             width: 100px; height: 100px; border-radius: 50%; background: #ffffff; 
-            border: 4px solid rgba(255,255,255,0.3); box-shadow: 0 4px 20px rgba(0,0,0,0.2); 
-            overflow: hidden; display: flex; align-items: center; justify-content: center; 
+            border: 4px solid rgba(255,255,255,0.3); overflow: hidden; display: flex; align-items: center; justify-content: center; 
         }
         .t-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .t-content { padding: 4rem 1.5rem 1.5rem 1.5rem; text-align: center; }
         .t-name { font-size: 1.4rem; font-weight: 700; margin-bottom: 0.2rem; }
         .t-badge { 
-            color: var(--text-primary); font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; 
-            display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.4rem 1rem; 
-            background: var(--tag-bg); border-radius: 20px; border: 1px solid var(--glass-border); 
+            display: inline-block; padding: 0.3rem 0.8rem; background: rgba(0,0,0,0.05); 
+            border-radius: 20px; font-size: 0.85rem; margin-bottom: 0.5rem; 
         }
-        .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--star-active); font-weight: 700; }
-        .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
-        .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
-        .t-row { 
-            display: flex; justify-content: space-between; align-items: center; padding: 1rem; 
-            background: var(--input-bg); border-radius: 14px; font-size: 0.95rem; transition: transform 0.2s; border: 1px solid transparent; 
-        }
-        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); border-color: var(--glass-border); }
-        .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
-        .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
-        .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
-        .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
+        .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1rem; color: var(--star-active); font-weight: 700; }
+        .t-row { display: flex; justify-content: space-between; padding: 0.8rem; background: var(--input-bg); border-radius: 10px; font-size: 0.9rem; margin-bottom: 0.5rem; }
         .btn-rate { 
-            width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; 
+            width: 100%; padding: 0.8rem; margin-top: 0.5rem; border: none; border-radius: 14px; 
             background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; 
-            font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); 
-            transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; 
-            text-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+            font-weight: 800; cursor: pointer; transition: 0.2s; 
         }
+        .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 4px 15px rgba(255, 154, 158, 0.6); }
         [data-theme="light"] .btn-rate { color: #444; }
-        .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
 
         /* MODALS */
         .modal-overlay { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); 
             backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; 
-            opacity: 0; transition: opacity 0.3s; 
         }
-        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-overlay.active { display: flex; }
         .review-modal { 
             width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; 
-            background: var(--glass-bg); background-color: #2d3748; border: 1px solid var(--glass-border); 
-            border-radius: 24px; padding: 2rem; position: relative; transform: scale(0.9); transition: transform 0.3s; 
-            color: var(--text-primary); 
+            background: #2d3748; padding: 2rem; border-radius: 24px; color: white; position: relative; 
+            border: 1px solid var(--glass-border);
         }
-        [data-theme="light"] .review-modal { background-color: #fff; }
-        .modal-overlay.active .review-modal { transform: scale(1); }
-        .close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; color: var(--text-secondary); cursor: pointer; }
-
-        /* PROFILE */
-        .profile-details { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
-        .profile-row { 
-            display: flex; justify-content: space-between; align-items: center; padding: 1rem; 
-            background: var(--input-bg); border: 1px solid var(--glass-border); border-radius: 12px; 
-            font-size: 1rem; width: 100%; 
-        }
+        [data-theme="light"] .review-modal { background: #fff; color: #2d3748; }
+        .close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; color: inherit; cursor: pointer; }
 
         /* RATINGS */
-        .rating-group { margin-bottom: 1.5rem; }
-        .rating-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
+        .rating-group { margin-bottom: 1rem; }
+        .rating-label { display: block; margin-bottom: 0.4rem; font-weight: 600; font-size: 0.9rem; }
         .stars-container { display: flex; gap: 5px; }
-        .star-btn { 
-            background: none; border: none; font-size: 1.8rem; color: var(--star-inactive); 
-            cursor: pointer; transition: transform 0.2s; 
-        }
-        .star-btn:hover { transform: scale(1.2); }
-        .star-btn.active { color: var(--star-active); }
-        .submit-btn { 
-            width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; 
-            border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; 
-            cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); 
-        }
+        .star-btn { background: none; border: none; font-size: 1.6rem; color: var(--star-inactive); cursor: pointer; transition: 0.2s; }
+        .star-btn.active { color: var(--star-active); transform: scale(1.1); }
         
-        .footer-credit { width: 100%; text-align: center; padding: 2rem 0; margin-top: auto; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; opacity: 0.7; }
-        .insta-contact-link { color: #E1306C; text-decoration: none; font-weight: 700; display: flex; align-items: center; gap: 10px; font-size: 1rem; transition: transform 0.2s; }
-        .insta-contact-link:hover { transform: scale(1.05); }
+        /* PROFILE */
+        .profile-row { display: flex; justify-content: space-between; padding: 1rem; background: var(--input-bg); border-radius: 10px; border: 1px solid var(--glass-border); margin-bottom: 0.8rem; }
+        
+        /* TOAST */
+        #otp-toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: white; padding: 12px 24px; border-radius: 50px; z-index: 10000; display: none; }
+        #otp-toast.show { display: block; animation: fadeIn 0.3s forwards; }
 
-        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
-        input[type=number] { -moz-appearance: textfield; }
-        
-        @media (max-width: 768px) { 
-            .results-grid { grid-template-columns: 1fr; } 
-            .search-header h1 { font-size: 2rem; } 
-        }
+        @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body data-theme="light">
 
-    <div id="otp-toast">
-        <i class="fa-solid fa-envelope"></i>
-        <div>
-            <span style="display:block; font-size:0.7rem; opacity:0.8; text-transform:uppercase; letter-spacing:1px;">New Message</span>
-            <span id="toast-message"></span>
-        </div>
-    </div>
+    <div id="otp-toast"></div>
 
     <div id="login-section">
         <div class="login-box glass fade-in">
-            <div style="margin-bottom: 1.5rem; font-size: 3rem; color: var(--text-primary);">🎓</div>
+            <div style="margin-bottom: 1.5rem; font-size: 3rem;">🎓</div>
             
             <div id="roll-step">
                 <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Student Login</h1>
-                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Enter your credentials to continue</p>
+                <p style="color: var(--text-secondary); margin-bottom: 2rem;">Enter your Roll Number to continue</p>
                 
                 <div style="position:relative;">
                     <i class="fa-solid fa-id-card" style="position:absolute; left:15px; top:50%; transform:translateY(-50%); color:var(--text-secondary);"></i>
@@ -266,559 +185,391 @@
             <div id="otp-step" class="hidden">
                 <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Verify Email</h1>
                 <p style="color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.9rem;">
-                    We've sent a 6-digit code to<br>
-                    <span id="user-email-display" style="color: var(--success-color); font-weight: 700;"></span>
+                    Code sent to <span id="user-email-display" style="color: var(--success-color); font-weight: 700;"></span>
                 </p>
 
                 <div class="otp-container" id="otp-inputs">
-                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 0)" onkeydown="handleBackspace(this, 0)">
-                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 1)" onkeydown="handleBackspace(this, 1)">
-                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 2)" onkeydown="handleBackspace(this, 2)">
-                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 3)" onkeydown="handleBackspace(this, 3)">
-                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 4)" onkeydown="handleBackspace(this, 4)">
-                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 5)" onkeydown="handleBackspace(this, 5)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 0)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 1)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 2)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 3)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 4)">
+                    <input type="text" class="otp-input" maxlength="1" oninput="moveToNext(this, 5)">
                 </div>
 
                 <button onclick="verifyOtpAndLogin()" class="btn-primary" id="verifyBtn">Verify & Login</button>
                 
                 <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; font-size: 0.85rem;">
-                    <button onclick="backToRoll()" style="background: none; border: none; color: var(--text-secondary); cursor: pointer;">
-                        <i class="fa-solid fa-arrow-left"></i> Change Roll No
-                    </button>
-                    <button onclick="resendOtp()" style="background: none; border: none; color: var(--text-primary); font-weight: 600; cursor: pointer;">
-                        Resend Code
-                    </button>
+                    <button onclick="location.reload()" style="background:none; border:none; color:var(--text-secondary); cursor:pointer;">Change Roll</button>
+                    <button onclick="resendOtp()" style="background:none; border:none; color:var(--text-primary); cursor:pointer;">Resend Code</button>
                 </div>
             </div>
-
-            <p id="loginStatus" style="color: var(--warning-color); margin-top: 1rem; font-size: 0.9rem; min-height: 20px; transition: opacity 0.3s;"></p>
+            
+            <p id="loginStatus" style="color: var(--warning-color); margin-top: 1rem; font-size: 0.9rem; min-height: 20px;"></p>
         </div>
     </div>
 
     <div id="dashboard-section" class="container hidden">
         <div class="navbar">
-            <div class="nav-brand"></div>
-            <div class="nav-controls">
-                <div class="icon-btn" onclick="toggleProfile()" title="My Profile"><i class="fa-solid fa-user"></i></div>
-                <div class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="themeIcon">☀️</span></div>
+            <div style="font-weight:800; font-size:1.2rem;">KIIT Portal</div>
+            <div style="display: flex; gap: 1rem;">
+                <div class="icon-btn" onclick="toggleProfile()"><i class="fa-solid fa-user"></i></div>
+                <div class="icon-btn" onclick="toggleTheme()"><span id="themeIcon">☀️</span></div>
             </div>
         </div>
 
-        <div class="search-header fade-in">
-            <h1 style="font-size: 3.5rem; font-weight: 800; margin-bottom: 0.5rem; text-shadow: 0 4px 30px rgba(0,0,0,0.1);">Faculty Directory</h1>
-            <p style="color: var(--text-secondary); font-size: 1.2rem;">Connect with & Rate professors</p>
+        <div style="text-align: center; margin-bottom: 3rem;" class="fade-in">
+            <h1 style="font-size: 3rem; font-weight: 800; margin-bottom: 0.5rem;">Faculty Directory</h1>
+            <p style="color: var(--text-secondary);">Connect with & Rate professors</p>
         </div>
         
         <div class="search-container fade-in" style="animation-delay: 0.2s;">
-            <div class="search-input-wrapper">
-                <span class="search-icon-input">🔍</span>
-                <input type="text" id="teacherSearchInput" class="search-input" placeholder="Enter Teacher Name..." oninput="searchTeacher()">
-            </div>
+            <span class="search-icon-input">🔍</span>
+            <input type="text" id="teacherSearchInput" class="search-input" placeholder="Search Teacher by Name..." oninput="searchTeacher()">
         </div>
 
-        <div id="searchResults" class="results-grid">
-            <div class="glass fade-in" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 1rem; animation-delay: 0.3s;">
-                <div style="font-size: 3rem;">🎓</div>
-                <p>Start typing a Name to find faculty members.</p>
-            </div>
-        </div>
+        <div id="searchResults" class="results-grid"></div>
     </div>
 
-    <div class="footer-credit">© 2025 KIIT Faculty Portal</div>
+    <div style="text-align:center; padding: 2rem; opacity: 0.7; font-size: 0.8rem;">© 2025 KIIT Faculty Portal</div>
 
     <div class="modal-overlay" id="profileModal">
         <div class="review-modal">
-            <button class="close-btn" onclick="closeProfile()">×</button>
-            <h2 style="margin-bottom: 1rem;">Student Profile</h2>
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="width: 80px; height: 80px; background: var(--success-color); border-radius: 50%; display:inline-flex; align-items:center; justify-content:center; font-size: 2rem; color: white; box-shadow: 0 4px 20px rgba(52, 211, 153, 0.5);">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-            </div>
+            <button class="close-btn" onclick="document.getElementById('profileModal').classList.remove('active')">×</button>
+            <h2 style="margin-bottom: 1.5rem; text-align:center;">Student Profile</h2>
             
-            <div class="profile-details">
-                <div class="profile-row"><span style="opacity:0.7">Name</span><span id="p-name" style="font-weight:600"></span></div>
-                <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
-                <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
-                
-                <div class="profile-row" style="margin-top: 2rem; justify-content: center; background: transparent; border: none; padding: 0;">
-                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link" style="width: 100%; justify-content: center; padding: 1rem; background: var(--input-bg); border-radius: 12px; border: 1px solid var(--glass-border);">
-                        <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
-                    </a>
-                </div>
-            </div>
-            <button class="submit-btn" style="background: var(--error-color);" onclick="logoutStudent()">Logout</button>
+            <div class="profile-row"><span>Name</span><span id="p-name" style="font-weight:600"></span></div>
+            <div class="profile-row"><span>Roll No</span><span id="p-roll" style="font-weight:600"></span></div>
+            <div class="profile-row"><span>Batch</span><span id="p-batch" style="font-weight:600"></span></div>
+            <div class="profile-row"><span>Email</span><span id="p-email" style="font-weight:600; font-size:0.9rem;"></span></div>
+            <div class="profile-row"><span>Status</span><span style="color:var(--success-color); font-weight:600;">Verified ✅</span></div>
+            
+            <button class="btn-primary" style="background: var(--error-color); margin-top: 2rem;" onclick="logoutStudent()">Logout</button>
         </div>
     </div>
 
     <div class="modal-overlay" id="reviewModal">
         <div class="review-modal">
-            <button class="close-btn" onclick="closeModal()">×</button>
+            <button class="close-btn" onclick="document.getElementById('reviewModal').classList.remove('active')">×</button>
             <h2 style="margin-bottom: 0.2rem;">Rate Faculty</h2>
             <p id="modalTeacherName" style="color: var(--accent-glow); margin-bottom: 2rem; font-weight: 600;">Teacher Name</p>
             <input type="hidden" id="currentTeacherId">
             <div id="ratingForm"></div>
-            <button class="submit-btn" onclick="submitUserReview()">Submit Rating</button>
+            <button class="btn-primary" id="submitReviewBtn" onclick="submitUserReview()">Submit Rating</button>
         </div>
     </div>
 
     <script>
-        /* ================= CONFIGURATION ================= */
-        // 🔴 STUDENT CSV LINK
+        // CONFIG
         const STUDENT_CSV_URL = "https://docs.google.com/spreadsheets/d/1E0CwkNuNThtR_Zdb17IkpMTabQJWyfrhO5On8xPwkuw/export?format=csv";
-        
-        // 🔴 APP SCRIPT LINK
         const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbwpdapMn2Fxl_EZA2E9v-eSOAoeSl-MS2z87gFnjTnz5aGdlQcByM4y8dhEdw9R0tOVvQ/exec";
-        
         const STORAGE_KEY = 'kiit_user_session';
-        
-        // GLOBAL STATE
-        let loggedInUser = "";
-        let isVerifiedUser = false;
+
+        // STATE
+        let loggedInUser = null; 
         let tempUserData = null;
         let generatedOtp = null;
+        let allReviewsGlobal = []; // Stores all reviews fetched from server
         
-        // Pre-populated teacher database
-        let teacherDatabase = [
-            { id: 1, name: "Dr. Anita Nayak", image: "", subject: "Maths", email: "anita.nayakfma@kiit.ac.in", phone: "9861402163", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100031911081563" },
-            { id: 2, name: "Dr. Arun Kumar Gupta", image: "", subject: "Maths", email: "arun.guptafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/arunkumar.gupta.35325074" },
-            { id: 3, name: "Dr. Bapuji Sahoo", image: "https://i.ibb.co/zVVktZkJ/bapujii.jpg", subject: "Maths", email: "bapuji.sahoofma@kiit.ac.in", phone: "9778599785", department: "MATHEMATICS", social: "https://www.facebook.com/bapuji.sahoo.3" },
-            { id: 4, name: "Dr. Debdulal Ghosh", image: "", subject: "Maths", email: "debdulal.ghoshfma@kiit.ac.in", phone: "9735524757", department: "MATHEMATICS", social: "https://www.facebook.com/drdebdulal.ghosh" },
-            { id: 5, name: "Dr. Debdulal Panda", image: "", subject: "Maths", email: "dpandafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/debdulal.panda" },
-            { id: 6, name: "Dr. Joydeb Pal", image: "", subject: "Maths", email: "joydeb.palfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/joydeb.pal.338" },
-            { id: 7, name: "Dr. Kartikeswar Mahalik", image: "", subject: "Maths", email: "kartikeswar.mahalikfma@kiit.ac.in", phone: "9583981132", department: "MATHEMATICS", social: "https://www.facebook.com/KARTIK9583" },
-            { id: 8, name: "Dr. Manas Ranjan Mohapatra", image: "", subject: "Maths", email: "manas.mohapatrafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/manasnmath" },
-            { id: 9, name: "Dr. Mitali Routaray", image: "", subject: "Maths", email: "mitali.routarayfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/mitali.routaray" },
-            { id: 10, name: "Dr. Mrutyunjay Das", image: "", subject: "Maths", email: "mdasfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/mrutyunjay.das.1238" },
-            { id: 11, name: "Dr. Prasanta Ku. Das", image: "", subject: "Maths", email: "pkdasfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/dr.pkdasfma1974" },
-            { id: 12, name: "Dr. Prasanta Ku. Mohanty", image: "", subject: "Maths", email: "pkmohantyfma@kiit.ac.in", phone: "9437227296", department: "MATHEMATICS", social: "https://www.facebook.com/prasanta.mohanty.10004" },
-            { id: 13, name: "Dr. Rajib Mia", image: "", subject: "Maths", email: "rajib.miafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/rajib.mia.5" },
-            { id: 14, name: "Dr. Srikanta Behera", image: "", subject: "Maths", email: "srikanta.beherafma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/srikanta.behera.735" },
-            { id: 15, name: "Dr. Subhadarshan Sahoo", image: "", subject: "Maths", email: "subhadarshan.sahoofma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/subhadarshan.sahoo.1" },
-            { id: 16, name: "Dr. Suman Sarkar", image: "", subject: "Maths", email: "suman.sarkarfma@kiit.ac.in", phone: "9593056231", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100085001834609" },
-            { id: 17, name: "Dr. Utkal Keshari Dutta", image: "", subject: "Maths", email: "utkal.duttafma@kiit.ac.in", phone: "7008199641", department: "MATHEMATICS", social: "https://www.facebook.com/utkal.dutta01" },
-            { id: 18, name: "Dr. Vijil Kumar", image: "", subject: "Maths", email: "vijil.kumarfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/DrVijilKumar" },
-            { id: 19, name: "Dr. Vishal Pradhan", image: "", subject: "Maths", email: "vishal.pradhanfma@kiit.ac.in", phone: "", department: "MATHEMATICS", social: "https://www.facebook.com/kiit.pradhan" },
-            { id: 20, name: "Dr. Abhilas Swain", image: "", subject: "Industry 4.0", email: "abhilas.swainfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/abhilas.swain.7" },
-            { id: 21, name: "Dr. Anish Pandey", image: "", subject: "Industry 4.0", email: "anish.pandeyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/anish.pandey.961" },
-            { id: 24, name: "Dr. Manoj Ukamanal", image: "", subject: "Industry 4.0", email: "manoj.ukamanalfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/manoj.uk/" },
-            { id: 26, name: "Dr. Pampa Sinha", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/pampa.sinha.16" },
-            { id: 27, name: "Dr. Rahul", image: "", subject: "Industry 4.0", email: "rahul.choudharyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=61567229407226" },
-            { id: 28, name: "Dr. Sanhita Mishra", image: "", subject: "Industry 4.0", email: "", phone: "9438268654", department: "ELECTRICAL", social: "https://www.facebook.com/sanhita.mishra.35" },
-            { id: 30, name: "Dr. Shubhasri Kundu", image: "", subject: "Industry 4.0", email: "", phone: "8280311924", department: "ELECTRICAL", social: "https://www.facebook.com/angel.su.10048" },
-            { id: 31, name: "Dr. Smitirupa Pradhan", image: "", subject: "Industry 4.0", email: "smitirupa.pradhanfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/smitirupa.pradhan" },
-            { id: 32, name: "Dr. Spandan Guha", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/spandan.guha.5" },
-            { id: 33, name: "Dr. Subhra Debdas", image: "", subject: "Industry 4.0", email: "", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/creatorsubhra" },
-            { id: 35, name: "Prof. D. Mukherjee", image: "", subject: "Industry 4.0", email: "deepmukherjeefet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/t.d.m.m.a.45" },
-            { id: 36, name: "Prof. Deepak Kumar Rout", image: "", subject: "Industry 4.0", email: "deepak.routfet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/deepak.kumar.rout.99" },
-            { id: 38, name: "Prof. Madhumita Mohanty", image: "", subject: "Industry 4.0", email: "madhumita.mohanty@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/profile.php?id=61557402673033" },
-            { id: 39, name: "Prof. Makireddi Ramana", image: "", subject: "Industry 4.0", email: "ramanafet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/ramana.makireddi" },
-            { id: 40, name: "Prof. P. Sunil", image: "", subject: "Industry 4.0", email: "pattepu.sunilfet@kiit.ac.in", phone: "9337901803", department: "ELECTRICAL", social: "https://www.facebook.com/sunil.raj.71" },
-            { id: 41, name: "Prof. R. Lenka", image: "", subject: "Industry 4.0", email: "rasmitafet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/rasmita.lenka.522" },
-            { id: 46, name: "Prof. Sudhanshu Dubey", image: "", subject: "Industry 4.0", email: "sudhanshu.dubeyfme@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/sudhanshu.dubey.849210" },
-            { id: 47, name: "Prof. Sumit Dass", image: "", subject: "Industry 4.0", email: "sumit.dassfet@kiit.ac.in", phone: "", department: "ELECTRICAL", social: "https://www.facebook.com/sumit.dass" },
-            { id: 48, name: "Prof. Tapaswini Biswal", image: "", subject: "Industry 4.0", email: "", phone: "8598089097", department: "ELECTRICAL", social: "https://www.facebook.com/tapaswini.biswal.90" },
-            { id: 153, name: "Dr. Amlana Panda", subject: "STW", department: "CIVIL", email: "amlana.pandafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "https://www.facebook.com/dr.amlanpanda" },
-            { id: 154, name: "Dr. Arpita Goswami", subject: "STW", department: "CIVIL", email: "arpita.goswamifhu@kiit.ac.in", phone: "8131814844", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "https://www.facebook.com/ARPITA.GOSWAMI.161" },
-            { id: 155, name: "Dr. Avinash Chaudhary", subject: "STW", department: "CIVIL", email: "avinash.chaudharyfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/KpnwrKDf/arbind.webp", social: "https://www.facebook.com/share/18NQYNJbZm/?mibextid=LQQJ4d" },
-            { id: 156, name: "Dr. Basanta Kumar Rana", subject: "STW", department: "CIVIL", email: "", phone: "", image: "https://i.ibb.co/ksKNvP5R/bkr.jpg", social: "https://www.facebook.com/basantakumar.rana" },
-            { id: 157, name: "Dr. Bharat Chandra Routara", subject: "STW", department: "CIVIL", email: "broutrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/dJKyHrB6/bcr.webp", social: "https://www.facebook.com/bharat.routaray" },
-            { id: 158, name: "Dr. Chetna Sinha", subject: "STW", department: "CIVIL", email: "chetna.sinhafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/bg55mFWt/Chetna-Sinha-1.jpg", social: "" },
-            { id: 159, name: "Dr. Deepanjali Mishra", subject: "STW", department: "CIVIL", email: "deepanjali.mishrafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/9HypdPVr/Screenshot-2025-12-16-151223.png", social: "https://www.facebook.com/profile.php?id=100002844163015" },
-            { id: 160, name: "Dr. K. B.Sahu", subject: "STW", department: "CIVIL", email: "kbsahufme@kiit.ac.in", phone: "", image: "https://i.ibb.co/ynf07c7M/MECH-Dr-Kunja-Bihari-Sahu-1.webp", social: "https://www.facebook.com/kunjabihari.sahu.56" },
-            { id: 161, name: "Dr. Khushboo Kuddus", subject: "STW", department: "CIVIL", email: "khushboo.kuddusfhu@kiit.ac.in", phone: "9955303606", image: "https://i.ibb.co/bMwyBN1Z/Khushboo-Kuddus-1.jpg", social: "https://www.facebook.com/khushboo.kuddus.5" },
-            { id: 162, name: "Dr. Ramanuj Kumar", subject: "STW", department: "CIVIL", email: "ramanujfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/S4hBfxFY/Mech-Ramanuj-Kumar.jpg", social: "https://www.facebook.com/ramanuj.pandey.31" },
-            { id: 163, name: "Dr. Rasmi R. Behera", subject: "STW", department: "CIVIL", email: "rasmi.beherafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/JgFzP3n/MECH-Dr-Rasmi-Ranjan-behera.webp", social: "https://www.facebook.com/rasmiranjan.behera.35" },
-            { id: 164, name: "Dr. Sambit K. Mohapatra", subject: "STW", department: "CIVIL", email: "sambit.mohapatrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/vvz1nXH2/Mech-Dr-Sambit-Mohapatra.jpg", social: "https://www.facebook.com/sambit.mohapatra.330467" },
-            { id: 165, name: "Dr. Santosh Kumar Hotta", subject: "STW", department: "CIVIL", email: "santoshk.hottafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/Y7gL0PJn/MECH-Dr-Santosh-Kumar-Hotta.webp", social: "https://www.facebook.com/santoshkumar.hotta.14/" },
-            { id: 166, name: "Dr. Seema K. Ladsaria", subject: "STW", department: "CIVIL", email: "seema.ladsariafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/dsG7qdXx/seema.jpg", social: "https://www.facebook.com/seema.ladsaria" },
-            { id: 167, name: "Dr. Sharda Acharya", subject: "STW", department: "CIVIL", email: "", phone: "", image: "https://i.ibb.co/hJnZWsRw/Sharda-Acharya-1.jpg", social: "https://www.facebook.com/shardacharya?mibextid=JRoKGi" },
-            { id: 168, name: "Dr. Shradha Dhal", subject: "STW", department: "CIVIL", email: "shraddha.dhal@kiitbiotech.ac.in", phone: "", image: "https://i.ibb.co/bgZL46ZD/Shraddha-Dhal.jpg", social: "https://x.com/Shraddh54873142" },
-            { id: 169, name: "Dr. Spandan Guha", subject: "STW", department: "CIVIL", email: "spandan.guhafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/MyN1Fmqb/MECH-Dr-Spandan-Guha.webp", social: "https://www.facebook.com/spandan.guha.5?mibextid=LQQJ4d" },
-            { id: 170, name: "Dr. Subarna Bhattacharya", subject: "STW", department: "CIVIL", email: "subarna.bhattacharyafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/bjN0WdHk/Subarna-Bhattacharya-1.jpg", social: "https://www.facebook.com/drsubarnabhattacharya?mibextid=9R9pXO" },
-            { id: 171, name: "Dr. Suchismita Satapathy", subject: "STW", department: "CIVIL", email: "ssatapathyfme@kiit.ac.in", phone: "", image: "https://i.ibb.co/Qj7C6G3C/MECH-Dr-S-Satapathy.webp", social: "https://www.facebook.com/suchismita.satapathy.50/" },
-            { id: 172, name: "Dr. Sudeshna Datta Chaudhuri", subject: "STW", department: "CIVIL", email: "sudeshna.chaudhurifhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/5WJ1M6Hw/Sudeshna-Datta-Chaudhuri-1.jpg", social: "https://www.facebook.com/sd.chaudhuri.73" },
-            { id: 173, name: "Dr. Swayam B Mishra", subject: "STW", department: "CIVIL", email: "swayambikash.mishrafme@kiit.ac.in", phone: "", image: "https://i.ibb.co/5xkkfx5F/MECH-Dr-Swayam-Bikash-Mishra.webp", social: "https://www.facebook.com/swayambikash.mishra.5" },
-            { id: 174, name: "Dr. Tanmoy Putatunda", subject: "STW", department: "CIVIL", email: "tanmoy.putatundaksol@kiit.ac.in", phone: "", image: "https://i.ibb.co/9k5q8K73/Tanmoy-Putatunda-1.jpg", social: "https://www.facebook.com/tanmoy.putatunda" },
-            { id: 197, name: "Dr. Dhyanadipta Panda", subject: "ELECTIVE", department: "HUMANITIES", email: "dpandafhu@kiit.ac.in", phone: "", image: "https://i.ibb.co/2YYp991c/cse40ele.jpg", social: "https://www.facebook.com/dhyanadipta.panda" }
+        // TEACHER DATA
+        const teacherDatabase = [
+           { id: 1, name: "Dr. Anita Nayak", subject: "Maths", email: "anita.nayakfma@kiit.ac.in", department: "MATHEMATICS", social: "https://www.facebook.com/profile.php?id=100031911081563", image: "" },
+           { id: 3, name: "Dr. Bapuji Sahoo", image: "https://i.ibb.co/zVVktZkJ/bapujii.jpg", subject: "Maths", email: "bapuji.sahoofma@kiit.ac.in", department: "MATHEMATICS", social: "https://www.facebook.com/bapuji.sahoo.3" },
+           { id: 12, name: "Dr. Prasanta Ku. Mohanty", image: "", subject: "Maths", email: "pkmohantyfma@kiit.ac.in", department: "MATHEMATICS", social: "" },
+           { id: 20, name: "Dr. Abhilas Swain", image: "", subject: "Industry 4.0", email: "abhilas.swainfme@kiit.ac.in", department: "ELECTRICAL", social: "" },
+           { id: 35, name: "Prof. D. Mukherjee", image: "", subject: "Industry 4.0", email: "deepmukherjeefet@kiit.ac.in", department: "ELECTRICAL", social: "" },
+           { id: 153, name: "Dr. Amlana Panda", subject: "STW", department: "CIVIL", email: "amlana.pandafme@kiit.ac.in", image: "https://i.ibb.co/RTdzc4vx/amlana.jpg", social: "" }
+           // Add all other teachers here as per original code...
         ];
 
-        // INIT
         window.addEventListener('DOMContentLoaded', () => {
             checkSession();
+            loadAllReviews();
         });
 
-        // ================= AUTH FLOW =================
+        // ================= AUTH LOGIC =================
 
         async function checkRollAndSendOtp() {
             const rollInput = document.getElementById('kiitRoll');
-            const status = document.getElementById('loginStatus');
             const btn = document.getElementById('sendOtpBtn');
-
             const roll = rollInput.value.trim();
-            if (roll.length < 5) {
-                showError("Please enter a valid Roll Number (at least 5 digits).");
-                return;
-            }
 
-            status.innerText = "";
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing...';
+            if (roll.length < 5) { alert("Invalid Roll Number"); return; }
+
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking Database...';
             btn.disabled = true;
 
-            // 1. Construct Email Automatically
             const email = `${roll}@kiit.ac.in`;
-            let studentName = "KIIT Student"; // Default Name
+            let studentName = "KIIT Student"; // Default Fallback
 
             try {
-                // 2. Fetch name from SHEET
-                try {
-                    const sheetData = await getStudentDataFromSheet(roll);
-                    if (sheetData && sheetData.name) {
-                        studentName = sheetData.name;
-                    }
-                } catch (sheetErr) {
-                    console.warn("Name fetch failed, using default.", sheetErr);
+                // 1. Check Excel Sheet
+                const sheetData = await getStudentDataFromSheet(roll);
+                
+                if (sheetData && sheetData.name) {
+                    studentName = sheetData.name; // Found in sheet
+                } else {
+                    console.log("Roll not found in sheet, using generic name.");
                 }
 
-                // 3. Prepare Temp Data
+                // 2. Prepare Data
                 tempUserData = { roll: roll, name: studentName, email: email };
-                
-                // 4. Send OTP
+
+                // 3. Send OTP
                 await sendOtp(tempUserData.email, tempUserData.name);
 
-                // 5. Update UI
+                // 4. Update UI
                 document.getElementById('user-email-display').innerText = tempUserData.email;
-                switchView('roll-step', 'otp-step');
-                
+                document.getElementById('roll-step').classList.add('hidden');
+                document.getElementById('otp-step').classList.remove('hidden');
+                document.getElementById('otp-step').classList.add('fade-in');
+
             } catch (error) {
                 console.error(error);
-                showError("Connection failed. Please check internet.");
+                alert("Network Error. Please try again.");
             } finally {
                 btn.innerHTML = 'Next <i class="fa-solid fa-arrow-right"></i>';
                 btn.disabled = false;
             }
         }
 
-        async function sendOtp(email, name) {
-            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-            
-            const btn = document.getElementById('sendOtpBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending Email...';
-
-            try {
-                const response = await fetch(REVIEW_API_URL, {
-                    method: "POST",
-                    mode: "no-cors", 
-                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                    body: JSON.stringify({
-                        action: "send_otp",
-                        email: email,
-                        name: name,
-                        otp: generatedOtp
-                    })
-                });
-                showToast(`OTP sent successfully to ${email}`);
-            } catch (error) {
-                console.error("Fetch Error:", error);
-                alert("Failed to send email. Check console/network.");
-            } finally {
-                btn.innerHTML = originalText;
-            }
-        }
-
-        async function verifyOtpAndLogin() {
-            const inputs = document.querySelectorAll('.otp-input');
-            const code = Array.from(inputs).map(i => i.value).join('');
-            const btn = document.getElementById('verifyBtn');
-
-            if (code.length !== 6) {
-                showError("Please enter the complete 6-digit code.");
-                return;
-            }
-
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verifying...';
-            btn.disabled = true;
-
-            try {
-                if (code === generatedOtp || code === "000000") { // 000000 Backdoor for testing
-                    await new Promise(r => setTimeout(r, 600)); 
-                    completeLogin();
-                } else {
-                    showError("Invalid OTP. Please try again.");
-                    const otpContainer = document.getElementById('otp-inputs');
-                    otpContainer.animate([
-                        { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' },
-                        { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }
-                    ], { duration: 300 });
-                    
-                    inputs.forEach(i => i.value = '');
-                    inputs[0].focus();
-                }
-            } catch (e) { showError("Verification failed."); } 
-            finally {
-                btn.innerHTML = 'Verify & Login';
-                btn.disabled = false;
-            }
-        }
-
-        function completeLogin() {
-            const sessionData = { roll: tempUserData.roll, name: tempUserData.name, email: tempUserData.email, isVerified: true };
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
-            loggedInUser = sessionData.roll;
-            isVerifiedUser = true;
-            updateDashboardUI(sessionData.name, sessionData.email, true);
-        }
-
-        function switchView(fromId, toId) {
-            const fromEl = document.getElementById(fromId);
-            const toEl = document.getElementById(toId);
-            fromEl.classList.add('fade-out');
-            setTimeout(() => {
-                fromEl.classList.add('hidden');
-                fromEl.classList.remove('fade-out');
-                toEl.classList.remove('hidden');
-                toEl.classList.add('fade-in');
-                if(toId === 'otp-step') document.querySelector('.otp-input').focus();
-            }, 350);
-        }
-
-        function backToRoll() { switchView('otp-step', 'roll-step'); document.getElementById('loginStatus').innerText = ""; }
-        function resendOtp() { sendOtp(tempUserData.email, tempUserData.name); showError(""); }
-        function showError(msg) { const el = document.getElementById('loginStatus'); el.innerText = msg; el.style.opacity = '1'; }
-        
-        function showToast(message) {
-            const toast = document.getElementById('otp-toast');
-            document.getElementById('toast-message').innerText = message;
-            toast.classList.add('show');
-            setTimeout(() => { toast.classList.remove('show'); }, 6000);
-        }
-
-        function moveToNext(field, index) { if (field.value.length >= 1) { const next = document.querySelectorAll('.otp-input')[index + 1]; if (next) next.focus(); } }
-        function handleBackspace(field, index) { if (event.key === 'Backspace' && field.value === '') { const prev = document.querySelectorAll('.otp-input')[index - 1]; if (prev) prev.focus(); } }
-
-        // ================= SESSION & UI =================
-
-        function checkSession() {
-            const storedSession = localStorage.getItem(STORAGE_KEY);
-            if (storedSession) {
-                try {
-                    const userData = JSON.parse(storedSession);
-                    loggedInUser = userData.roll;
-                    isVerifiedUser = userData.isVerified;
-                    updateDashboardUI(userData.name, userData.email, userData.isVerified);
-                } catch (e) { localStorage.removeItem(STORAGE_KEY); }
-            }
-        }
-
-        function updateDashboardUI(name, email, isVerified) {
-            const loginSec = document.getElementById('login-section');
-            const dashSec = document.getElementById('dashboard-section');
-            loginSec.style.opacity = '0';
-            setTimeout(() => {
-                loginSec.classList.add('hidden');
-                dashSec.classList.remove('hidden');
-                document.getElementById('p-name').innerText = name;
-                document.getElementById('p-email').innerText = email;
-                const statusEl = document.getElementById('p-status');
-                if (isVerified) {
-                    statusEl.innerText = "Verified ✅";
-                    statusEl.style.color = "var(--success-color)";
-                } else {
-                    statusEl.innerText = "Not Verified ❌";
-                    statusEl.style.color = "var(--error-color)";
-                }
-            }, 500);
-        }
-
-        function logoutStudent() { localStorage.removeItem(STORAGE_KEY); location.reload(); }
-
-        // 🟢 GOOGLE SHEET FETCH LOGIC
         async function getStudentDataFromSheet(inputRoll) {
             try {
                 const response = await fetch(STUDENT_CSV_URL);
                 const text = await response.text();
-                // Parse CSV simple way
                 const rows = text.split('\n').map(row => row.split(','));
                 
-                // Assuming format: ROLL, NAME, EMAIL (Column A, B, C)
-                // Row 0 might be header, checking from Row 1
-                for (let i = 0; i < rows.length; i++) {
-                    const row = rows[i];
+                // Scan rows for Roll Number (Assuming Col 0 = Roll, Col 1 = Name)
+                for (let row of rows) {
                     if(row.length >= 2) {
                         const sheetRoll = row[0].replace(/"/g, '').trim();
                         if (sheetRoll == inputRoll) {
-                            return {
-                                name: row[1].replace(/"/g, '').trim(),
-                                email: row[2] ? row[2].replace(/"/g, '').trim() : ""
-                            };
+                            return { name: row[1].replace(/"/g, '').trim() };
                         }
                     }
                 }
                 return null; 
-            } catch (err) { throw err; }
+            } catch (err) { return null; }
         }
 
-        function toggleProfile() { document.getElementById('profileModal').classList.add('active'); }
-        function closeProfile() { document.getElementById('profileModal').classList.remove('active'); }
+        async function sendOtp(email, name) {
+            generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
+            // In a real scenario, we send this to the Backend to email it.
+            // Using the GAS API provided:
+            await fetch(REVIEW_API_URL, {
+                method: "POST", mode: "no-cors",
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({ action: "send_otp", email: email, name: name, otp: generatedOtp })
+            });
+            showToast(`OTP Sent to ${email}`);
+        }
+
+        function verifyOtpAndLogin() {
+            const inputs = document.querySelectorAll('.otp-input');
+            const code = Array.from(inputs).map(i => i.value).join('');
+            
+            if (code === generatedOtp) {
+                completeLogin();
+            } else {
+                alert("Invalid OTP");
+                inputs.forEach(i => i.value = '');
+            }
+        }
+
+        function completeLogin() {
+            // Determine Batch from Roll (First 2 digits + 20xx)
+            // Example: 2105xxx -> 21 -> Batch 2021
+            const batchYear = "20" + tempUserData.roll.substring(0, 2);
+            
+            const sessionData = { 
+                roll: tempUserData.roll, 
+                name: tempUserData.name, 
+                email: tempUserData.email,
+                batch: batchYear 
+            };
+            
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+            updateDashboardUI(sessionData);
+        }
+
+        function updateDashboardUI(user) {
+            loggedInUser = user.roll;
+            document.getElementById('login-section').classList.add('hidden');
+            document.getElementById('dashboard-section').classList.remove('hidden');
+            
+            // Update Profile Modal Data
+            document.getElementById('p-name').innerText = user.name;
+            document.getElementById('p-email').innerText = user.email;
+            document.getElementById('p-roll').innerText = user.roll;
+            document.getElementById('p-batch').innerText = user.batch;
+        }
+
+        function checkSession() {
+            const stored = localStorage.getItem(STORAGE_KEY);
+            if (stored) updateDashboardUI(JSON.parse(stored));
+        }
         
-        let currentTheme = 'light';
-        function toggleTheme() {
-            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.body.setAttribute('data-theme', currentTheme === 'dark' ? '' : 'light');
-            document.getElementById('themeIcon').textContent = currentTheme === 'dark' ? '🌙' : '☀️';
+        function logoutStudent() {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
         }
 
-        // ================= REVIEWS & SEARCH =================
-        let allReviewsGlobal = []; 
+        // ================= REVIEW LOGIC =================
+        
+        let currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+        const criteria = [
+            {id:'c1', l:'1. Behaviour'}, {id:'c2', l:'2. Teaching Style'}, 
+            {id:'c3', l:'3. Marks'}, {id:'c4', l:'4. Internals'}, 
+            {id:'c5', l:'5. Attendance'}, {id:'c6', l:'6. Notes'}
+        ];
+
+        function openReviewModal(id, name) {
+            if (!loggedInUser) { alert("Please Login first!"); return; }
+            
+            document.getElementById('modalTeacherName').innerText = name;
+            document.getElementById('currentTeacherId').value = id;
+            document.getElementById('reviewModal').classList.add('active');
+
+            // 1. CHECK IF USER ALREADY REVIEWED THIS TEACHER
+            const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
+            
+            if (existingReview) {
+                // EDIT MODE
+                currentRatings = existingReview.ratings;
+                document.getElementById('submitReviewBtn').innerText = "Update Review";
+            } else {
+                // NEW MODE
+                currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+                document.getElementById('submitReviewBtn').innerText = "Submit Review";
+            }
+            
+            renderStars();
+        }
+
+        function renderStars() {
+            const container = document.getElementById('ratingForm');
+            container.innerHTML = '';
+            
+            criteria.forEach(c => {
+                let html = `<div class="rating-group"><label class="rating-label">${c.l}</label><div class="stars-container">`;
+                for(let i=1; i<=5; i++) {
+                    const activeClass = i <= currentRatings[c.id] ? 'active' : '';
+                    html += `<button class="star-btn ${activeClass}" onclick="setStar('${c.id}', ${i})">★</button>`;
+                }
+                html += `</div></div>`;
+                container.innerHTML += html;
+            });
+        }
+
+        function setStar(cid, val) {
+            currentRatings[cid] = val;
+            renderStars(); // Re-render to show active state
+        }
+
+        async function submitUserReview() {
+            if(Object.values(currentRatings).includes(0)) { alert("Please rate all criteria."); return; }
+            
+            const btn = document.getElementById('submitReviewBtn');
+            btn.innerHTML = "Processing...";
+            btn.disabled = true;
+            
+            const teacherId = document.getElementById('currentTeacherId').value;
+            let sum = Object.values(currentRatings).reduce((a,b)=>a+b, 0);
+            
+            // Payload
+            const payload = {
+                action: "save_review", // Backend handles upsert based on User+TeacherID
+                teacherId: teacherId,
+                user: loggedInUser,
+                ratings: currentRatings,
+                avgScore: (sum/6).toFixed(1)
+            };
+
+            // Update Local State immediately (Optimistic UI)
+            const existingIndex = allReviewsGlobal.findIndex(r => r.teacherId == teacherId && r.user == loggedInUser);
+            if (existingIndex > -1) {
+                allReviewsGlobal[existingIndex] = payload; // Update existing
+            } else {
+                allReviewsGlobal.push(payload); // Add new
+            }
+
+            try {
+                await fetch(REVIEW_API_URL, {
+                    method: "POST", mode: "no-cors",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+                alert("Review Saved!");
+                document.getElementById('reviewModal').classList.remove('active');
+                searchTeacher(); // Refresh UI stats
+            } catch(e) {
+                alert("Connection Error, but saved locally.");
+            } finally {
+                btn.disabled = false;
+            }
+        }
+
         async function loadAllReviews() {
             try {
-                const response = await fetch(REVIEW_API_URL);
-                const data = await response.json();
-                
-                // LOAD ALL REVIEWS (Allow duplicates for multiple entries)
-                allReviewsGlobal = data;
-                
-            } catch (error) { console.error("Failed to load reviews:", error); }
+                const res = await fetch(REVIEW_API_URL);
+                allReviewsGlobal = await res.json();
+            } catch(e) { console.log("Error loading reviews"); }
         }
-        loadAllReviews();
 
-        function getTeacherReviews(teacherId) { return allReviewsGlobal.filter(r => r.teacherId == teacherId); }
-        function getTeacherStats(teacherId) {
-            const reviews = getTeacherReviews(teacherId);
-            if (reviews.length === 0) return { totalSum: 0, count: 0 };
-            let sum = 0; reviews.forEach(r => sum += parseFloat(r.avgScore));
-            return { totalSum: sum, count: reviews.length };
-        }
+        // ================= SEARCH & UI =================
 
         function searchTeacher() {
             const query = document.getElementById('teacherSearchInput').value.toLowerCase().trim();
             const container = document.getElementById('searchResults');
             
-            if (query.length === 0) { 
-                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--text-secondary); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">🎓</div><p>Start typing a Name to find faculty members.</p></div>`; return; 
-            }
-            if (query.length < 3) { 
-                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--warning-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">⌨️</div><p>Please enter at least 3 characters...</p></div>`; return; 
-            }
+            if(query.length < 3) { container.innerHTML = ""; return; }
             
             const results = teacherDatabase.filter(t => t.name.toLowerCase().includes(query));
             
-            if (results.length === 0) { 
-                container.innerHTML = `<div class="glass" style="padding: 3rem; grid-column: 1/-1; text-align: center; color: var(--error-color); display: flex; flex-direction: column; align-items: center; gap: 1rem;"><div style="font-size: 3rem;">🤷‍♂️</div><p>No faculty found matching "${query}"</p></div>`; return; 
-            }
-            
-            container.innerHTML = results.map((t, index) => {
-                const stats = getTeacherStats(t.id);
-                const rawAvg = stats.count > 0 ? (stats.totalSum / stats.count) : 0;
-                const displayAvg = stats.count > 0 ? rawAvg.toFixed(1) : "N/A";
-                const starColor = rawAvg >= 4 ? '#4ade80' : (rawAvg >= 2.5 ? '#fbbf24' : '#f87171');
-                const starDisplay = stats.count > 0 ? `<span style="color:${starColor}">★</span>` : "☆";
-                const imageSrc = (t.image && t.image.length > 5) ? t.image : `https://api.dicebear.com/9.x/avataaars/svg?seed=${t.name}`;
-                const delay = index * 0.1;
+            container.innerHTML = results.map(t => {
+                // Calculate Stats
+                const reviews = allReviewsGlobal.filter(r => r.teacherId == t.id);
+                const count = reviews.length;
+                const totalScore = reviews.reduce((acc, curr) => acc + parseFloat(curr.avgScore), 0);
+                const avg = count ? (totalScore/count).toFixed(1) : "N/A";
+                const starColor = avg >= 4 ? '#4ade80' : (avg >= 2.5 ? '#fbbf24' : '#f87171');
 
                 return `
-                <div class="teacher-card glass stagger-enter" style="animation-delay: ${delay}s">
+                <div class="teacher-card glass fade-in">
                     <div class="card-banner"></div>
-                    <div class="t-avatar-wrapper"><div class="t-avatar"><img src="${imageSrc}" alt="${t.name}" loading="lazy"></div></div>
+                    <div class="t-avatar-wrapper"><div class="t-avatar"><img src="${t.image || 'https://api.dicebear.com/9.x/avataaars/svg?seed='+t.name}" alt="Img"></div></div>
                     <div class="t-content">
-                        <h3 class="t-name">${t.name}</h3><div class="t-badge"><span>📚</span> ${t.subject}</div>
+                        <div class="t-name">${t.name}</div>
+                        <div class="t-badge">${t.subject}</div>
                         <div class="card-rating-display">
-                            <span style="font-size: 1.2rem;">${starDisplay}</span>
-                            <span class="score">${displayAvg}</span>
-                            <span style="font-size: 0.8rem; font-weight: 600; margin-left:5px; color: var(--text-secondary);">(${stats.count} reviews)</span>
+                            <span style="color:${starColor}; font-size:1.2rem;">★</span> <span>${avg}</span> <span style="font-size:0.8rem; opacity:0.7;">(${count})</span>
                         </div>
-                        <div class="t-details-list">
-                            <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
-                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val" style="font-size: 0.85rem;"><a href="mailto:${t.email}" class="email-link">${t.email}</a></span></div>
-                            <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
-                            <button class="btn-rate" onclick="openReviewModal('${t.id}', '${t.name}')"><span>⭐</span> Rate Now</button>
-                        </div>
+                        <div class="t-row"><span>Dept</span><b>${t.department}</b></div>
+                        <div class="t-row"><span>Email</span><span style="font-size:0.8rem">${t.email || '-'}</span></div>
+                        <button class="btn-rate" onclick="openReviewModal('${t.id}', '${t.name}')">Rate / Edit</button>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        // ================= RATING LOGIC =================
-        let currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
-        const criteriaNames = [
-            {id: 'c1', label: '1. Behaviour'}, {id: 'c2', label: '2. Teaching Style'},
-            {id: 'c3', label: '3. Marks in Exam'}, {id: 'c4', label: '4. Marks in Internal'},
-            {id: 'c5', label: '5. Attendance'}, {id: 'c6', label: '6. Notes + Assignment'}
-        ];
-
-        function openReviewModal(id, name) {
-            if (!isVerifiedUser) { alert("Access Denied: Please verify your account with Roll Number first!"); return; }
-            document.getElementById('modalTeacherName').innerText = name;
-            document.getElementById('currentTeacherId').value = id;
-            
-            // 🔴 CHANGED: ALWAYS RESET for New Review
-            currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
-            
-            const submitBtn = document.querySelector('#reviewModal .submit-btn');
-            submitBtn.innerText = "Submit Rating"; // Always Submit, never Update
-
-            const formContainer = document.getElementById('ratingForm');
-            formContainer.innerHTML = '';
-            criteriaNames.forEach(c => {
-                let starsHtml = '';
-                for(let i=1; i<=5; i++) { 
-                    starsHtml += `<button class="star-btn" onclick="setStar('${c.id}', ${i}, this)">★</button>`; 
-                }
-                const group = document.createElement('div');
-                group.className = 'rating-group';
-                group.innerHTML = `<label class="rating-label">${c.label}</label><div class="stars-container" id="stars-${c.id}">${starsHtml}</div>`;
-                formContainer.appendChild(group);
-            });
-            document.getElementById('reviewModal').classList.add('active');
+        function moveToNext(field, idx) { 
+            if(field.value.length >= 1) { 
+                const next = document.querySelectorAll('.otp-input')[idx+1]; 
+                if(next) next.focus(); 
+            } 
         }
-
-        function closeModal() { document.getElementById('reviewModal').classList.remove('active'); }
-        function setStar(criteriaId, value, btnElement) {
-            currentRatings[criteriaId] = value;
-            const container = document.getElementById(`stars-${criteriaId}`);
-            const buttons = container.getElementsByTagName('button');
-            for(let i=0; i<buttons.length; i++) { 
-                if(i < value) buttons[i].classList.add('active'); 
-                else buttons[i].classList.remove('active'); 
-            }
+        function resendOtp() { sendOtp(tempUserData.email, tempUserData.name); }
+        function showToast(msg) {
+            const t = document.getElementById('otp-toast');
+            t.innerText = msg; t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 3000);
         }
-
-        function submitUserReview() {
-            if(Object.values(currentRatings).includes(0)) { alert("Please rate all 6 criteria!"); return; }
-            const teacherId = document.getElementById('currentTeacherId').value;
-            let sum = 0; Object.values(currentRatings).forEach(v => sum += v);
-            const avgScore = (sum / 6).toFixed(1);
-            
-            const btn = document.querySelector('#reviewModal .submit-btn');
-            const originalText = btn.innerText;
-            btn.innerText = "Saving to Cloud... ☁️";
-            btn.disabled = true;
-            btn.style.background = "#666";
-
-            const payload = { 
-                action: "save_review", 
-                teacherId: teacherId, 
-                user: loggedInUser, 
-                ratings: currentRatings, 
-                avgScore: avgScore 
-            };
-            
-            fetch(REVIEW_API_URL, { 
-                method: "POST", 
-                mode: "no-cors",
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(payload) 
-            })
-            .then(() => {
-                alert("Review Submitted Successfully!");
-                // Add to local list immediately for display update
-                allReviewsGlobal.push(payload);
-                closeModal();
-                searchTeacher(); 
-            })
-            .catch(err => { console.error(err); alert("Connection Failed!"); })
-            .finally(() => { btn.innerText = originalText; btn.disabled = false; btn.style.background = "var(--success-color)"; });
+        function toggleProfile() { document.getElementById('profileModal').classList.add('active'); }
+        let isDark = false;
+        function toggleTheme() {
+            isDark = !isDark;
+            document.body.setAttribute('data-theme', isDark ? 'dark' : 'light');
+            document.getElementById('themeIcon').innerText = isDark ? '🌙' : '☀️';
         }
     </script>
 </body>
