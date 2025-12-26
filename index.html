@@ -150,10 +150,23 @@
         <div class="login-box glass fade-in">
             <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Student Login</h1>
             <p style="color: var(--text-secondary); margin-bottom: 2rem;">Verification Required</p>
-            <div id="roll-step">
+            
+            <!-- STEP 1: Enter Roll -->
+            <div id="step-1-roll">
                 <input type="number" id="kiitRoll" class="login-input" placeholder="Enter Roll Number (e.g. 2105123)">
-                <button onclick="loginStudent()" class="btn-primary">Login</button>
+                <button onclick="sendOtp()" class="btn-primary" id="btn-send-otp">Send OTP</button>
             </div>
+
+            <!-- STEP 2: Enter OTP (Initially Hidden) -->
+            <div id="step-2-otp" class="hidden">
+                <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:0.5rem;">
+                    OTP sent to <span id="display-email" style="font-weight:bold;"></span>
+                </p>
+                <input type="number" id="otpInput" class="login-input" placeholder="Enter 6-digit OTP">
+                <button onclick="verifyOtp()" class="btn-primary" id="btn-verify-otp">Verify & Login</button>
+                <button onclick="resetLogin()" style="background:none; border:none; color:var(--text-secondary); text-decoration:underline; margin-top:10px; cursor:pointer;">Change Roll Number</button>
+            </div>
+
             <p id="loginStatus" style="color: var(--warning-color); margin-top: 1rem; font-size: 0.9rem; min-height: 20px;"></p>
         </div>
     </div>
@@ -231,131 +244,142 @@
            1. AUTHENTICATION & GOOGLE SHEET CONNECTION
            ========================================= */
         const CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQsPVXkzWu4PV0LRpap9D_6y9_mGVa2HQmPcpg2GLxCDpEHC0fJEK_PG9eDbvbh6F1eCjGkcgI1ljQ5/pub?output=csv";
-        const STORAGE_KEY = 'kiit_user_session'; // Key for Local Storage
+        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycby2A9lADkN5yjj40JfsOZnhdba__eHDzesKDEqIkrE_t2gUXwGEGGwU_6cxiZ5Xff5ruw/exec";
+        const STORAGE_KEY = 'kiit_user_session'; 
 
         let loggedInUser = "";
-        let isVerifiedUser = false; // Flag to track status
+        let pendingRoll = ""; // Store roll while waiting for OTP
 
-        // --- NEW: CHECK SESSION ON LOAD ---
+        // --- CHECK SESSION ON LOAD ---
         window.addEventListener('DOMContentLoaded', () => {
-            checkSession();
-        });
-
-        function checkSession() {
             const storedSession = localStorage.getItem(STORAGE_KEY);
             if (storedSession) {
                 try {
                     const userData = JSON.parse(storedSession);
-                    console.log("Restoring session for:", userData.roll);
-                    
-                    // Restore Global Variables
                     loggedInUser = userData.roll;
-                    isVerifiedUser = true; // Always true as requested
-
-                    // Update UI (Skip Login Screen)
-                    updateDashboardUI(userData.name, userData.email, true);
+                    updateDashboardUI(userData.name, userData.email);
                 } catch (e) {
-                    console.error("Session parse error", e);
                     localStorage.removeItem(STORAGE_KEY);
                 }
             }
-        }
+            loadAllReviews(); // Load reviews in background
+        });
 
-        async function loginStudent() {
+        // --- STEP 1: SEND OTP ---
+        function sendOtp() {
             const rollInput = document.getElementById('kiitRoll');
             const status = document.getElementById('loginStatus');
-            const btn = document.querySelector('#roll-step button');
-
-            // 1. INPUT HANDLING
+            const btn = document.getElementById('btn-send-otp');
+            
             const roll = rollInput.value.trim();
-
-            // VALIDATION: Must be at least 5 digits
             if (roll.length < 5) {
-                status.innerHTML = "<i class='fa-solid fa-circle-exclamation'></i> Please enter a valid Roll Number (at least 5 digits).";
+                status.innerText = "Invalid Roll Number";
                 status.style.color = "var(--error-color)";
-                rollInput.style.border = "1px solid var(--error-color)";
                 return;
             }
 
-            // 2. SHOW LOADING
-            btn.innerHTML = "Verifying...";
             btn.disabled = true;
+            btn.innerText = "Sending...";
+            status.innerText = "";
 
-            try {
-                // 3. FETCH DATA
-                let studentData = null;
-                try {
-                    studentData = await getStudentDataFromSheet(roll);
-                } catch (e) {
-                    console.log("Fetch failed, logging in offline mode");
-                }
-
-                // 4. PREPARE USER DATA
-                loggedInUser = roll;
-                let sessionData = {};
-
-                if (studentData) {
-                    // FOUND IN SHEET -> VERIFIED
-                    sessionData = {
-                        roll: roll,
-                        name: studentData.name,
-                        email: studentData.email,
-                        isVerified: true
-                    };
+            fetch(REVIEW_API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: 'send_otp', roll: roll })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    pendingRoll = roll;
+                    document.getElementById('step-1-roll').classList.add('hidden');
+                    document.getElementById('step-2-otp').classList.remove('hidden');
+                    document.getElementById('display-email').innerText = roll + "@kiit.ac.in";
+                    status.innerText = "OTP sent to your KIIT email.";
+                    status.style.color = "var(--success-color)";
                 } else {
-                    // NOT FOUND -> STILL ALLOWED (Universal Access)
-                    sessionData = {
-                        roll: roll,
-                        name: "Student " + roll,
-                        email: "Guest Access",
-                        isVerified: true
-                    };
+                    throw new Error(data.error || "Failed to send");
                 }
-                
-                isVerifiedUser = true; // Globally allow access
-
-                // --- NEW: SAVE TO LOCAL STORAGE ---
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
-
-                // 5. UPDATE UI
-                updateDashboardUI(sessionData.name, sessionData.email, true);
-
-            } catch (error) {
-                console.error("Critical error:", error);
-                // Offline Fallback
-                loggedInUser = roll;
-                isVerifiedUser = true;
-                
-                const offlineData = {
-                    roll: roll,
-                    name: "Student " + roll,
-                    email: "Offline Mode",
-                    isVerified: true
-                };
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(offlineData));
-                updateDashboardUI("Student " + roll, "Offline", true);
-            }
+            })
+            .catch(err => {
+                status.innerText = "Error sending OTP. Try again.";
+                status.style.color = "var(--error-color)";
+                btn.disabled = false;
+                btn.innerText = "Send OTP";
+            });
         }
 
-        function updateDashboardUI(name, email, isVerified) {
-            // Switch Screens
+        // --- STEP 2: VERIFY OTP ---
+        function verifyOtp() {
+            const otpInput = document.getElementById('otpInput');
+            const status = document.getElementById('loginStatus');
+            const btn = document.getElementById('btn-verify-otp');
+            
+            const otp = otpInput.value.trim();
+            if (otp.length < 6) {
+                status.innerText = "Enter 6-digit OTP";
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "Verifying...";
+
+            fetch(REVIEW_API_URL, {
+                method: "POST",
+                body: JSON.stringify({ action: 'verify_otp', roll: pendingRoll, otp: otp })
+            })
+            .then(res => res.json())
+            .then(async data => {
+                if (data.result === 'success') {
+                    // Success! Now try to get name from Sheet (optional)
+                    let name = "Student " + pendingRoll;
+                    try {
+                        const studentData = await getStudentDataFromSheet(pendingRoll);
+                        if(studentData) name = studentData.name;
+                    } catch(e) {}
+
+                    const sessionData = {
+                        roll: pendingRoll,
+                        name: name,
+                        email: pendingRoll + "@kiit.ac.in",
+                        isVerified: true
+                    };
+
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+                    loggedInUser = pendingRoll;
+                    updateDashboardUI(name, sessionData.email);
+                } else {
+                    status.innerText = data.error || "Invalid OTP";
+                    status.style.color = "var(--error-color)";
+                    btn.disabled = false;
+                    btn.innerText = "Verify & Login";
+                }
+            })
+            .catch(err => {
+                status.innerText = "Verification failed.";
+                btn.disabled = false;
+                btn.innerText = "Verify & Login";
+            });
+        }
+
+        function resetLogin() {
+            document.getElementById('step-1-roll').classList.remove('hidden');
+            document.getElementById('step-2-otp').classList.add('hidden');
+            document.getElementById('btn-send-otp').disabled = false;
+            document.getElementById('btn-send-otp').innerText = "Send OTP";
+            document.getElementById('otpInput').value = "";
+            document.getElementById('loginStatus').innerText = "";
+        }
+
+        function updateDashboardUI(name, email) {
             document.getElementById('login-section').classList.add('hidden');
             document.getElementById('dashboard-section').classList.remove('hidden');
-            
-            // Set Profile Data
             document.getElementById('p-name').innerText = name;
             document.getElementById('p-email').innerText = email;
-            const statusEl = document.getElementById('p-status');
-
-            statusEl.innerText = "Authorized ✅";
-            statusEl.style.color = "var(--success-color)";
+            document.getElementById('p-status').innerText = "Verified ✅";
+            document.getElementById('p-status').style.color = "var(--success-color)";
         }
 
-        // --- NEW: LOGOUT FUNCTION ---
         function logoutStudent() {
-            // Clear Storage
             localStorage.removeItem(STORAGE_KEY);
-            // Refresh to show login screen
             location.reload();
         }
 
@@ -377,7 +401,7 @@
                     }
                 }
                 return null; 
-            } catch (err) { throw err; }
+            } catch (err) { return null; }
         }
 
         function toggleProfile() { document.getElementById('profileModal').classList.add('active'); }
@@ -391,43 +415,31 @@
         }
 
         /* =========================================
-           2. BACKEND CONNECTION (REVIEWS)
+           BACKEND CONNECTION (REVIEWS)
            ========================================= */
-        const REVIEW_API_URL = "https://script.google.com/macros/s/AKfycbyYtakmYOgAxNf5onRftXW8OKr_e4Yy5TpdX4uVM0EABnEZyYLmHlcgsRDI9k_-9feRAg/exec";
         let allReviewsGlobal = []; 
 
         async function loadAllReviews() {
-            console.log("Fetching reviews from cloud...");
+            console.log("Fetching reviews...");
             try {
                 const response = await fetch(REVIEW_API_URL);
                 const data = await response.json();
                 
-                // --- NEW: Deduplicate reviews locally to ensure 1 User = 1 Review per Teacher ---
-                // We use a Map to keep only the latest entry for each teacher-user combination
-                // (Assuming the backend appends new rows at the end)
                 const uniqueReviews = new Map();
                 data.forEach(review => {
-                    // Create a unique key for student+teacher combination
                     const key = `${review.teacherId}_${review.user}`;
-                    // Set the map (this overwrites previous entries, keeping the latest one)
                     uniqueReviews.set(key, review);
                 });
                 
                 allReviewsGlobal = Array.from(uniqueReviews.values());
-                console.log(`Success! Loaded ${allReviewsGlobal.length} unique reviews.`);
-                
+                console.log(`Loaded ${allReviewsGlobal.length} reviews.`);
             } catch (error) {
                 console.error("Failed to load reviews:", error);
             }
         }
-        loadAllReviews(); // Init Load
-
-        function getTeacherReviews(teacherId) {
-            return allReviewsGlobal.filter(r => r.teacherId == teacherId);
-        }
 
         function getTeacherStats(teacherId) {
-            const reviews = getTeacherReviews(teacherId);
+            const reviews = allReviewsGlobal.filter(r => r.teacherId == teacherId);
             if (reviews.length === 0) return { totalSum: 0, count: 0 };
             let sum = 0;
             reviews.forEach(r => sum += parseFloat(r.avgScore));
@@ -435,7 +447,7 @@
         }
 
         /* =========================================
-           3. DATA & SEARCH
+           SEARCH
            ========================================= */
         function searchTeacher() {
             const query = document.getElementById('teacherSearchInput').value.toLowerCase().trim();
@@ -495,24 +507,19 @@
         ];
 
         function openReviewModal(id, name) {
-            // ALLOW ALL USERS - No Verification Check
-            
             document.getElementById('modalTeacherName').innerText = name;
             document.getElementById('currentTeacherId').value = id;
             
-            // CHECK FOR EXISTING REVIEW
             const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
             const submitBtn = document.getElementById('modalSubmitBtn');
             const editIndicator = document.getElementById('editModeIndicator');
 
             if (existingReview) {
-                // Pre-fill Logic (Edit Mode)
                 currentRatings = { ...existingReview.ratings };
-                submitBtn.innerText = "Update Review"; // Change button text
+                submitBtn.innerText = "Update Review"; 
                 submitBtn.style.background = "var(--bg-gradient-2)";
                 editIndicator.style.display = "block";
             } else {
-                // Fresh Review Mode
                 currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
                 submitBtn.innerText = "Submit Review";
                 submitBtn.style.background = "var(--success-color)";
@@ -554,25 +561,30 @@
             
             const btn = document.querySelector('#reviewModal .submit-btn');
             const originalText = btn.innerText;
-            btn.innerText = "Saving to Cloud... ☁️";
+            btn.innerText = "Saving... ☁️";
             btn.disabled = true;
             btn.style.background = "#666";
 
-            const payload = { teacherId: teacherId, user: loggedInUser, ratings: currentRatings, avgScore: avgScore };
+            const payload = { 
+                action: 'submit_review', // IMPORTANT for backend router
+                teacherId: teacherId, 
+                user: loggedInUser, 
+                ratings: currentRatings, 
+                avgScore: avgScore 
+            };
 
             fetch(REVIEW_API_URL, { method: "POST", body: JSON.stringify(payload) })
             .then(res => res.json())
             .then(data => {
                 if(data.result === "success") {
-                    alert("Review Saved Successfully!");
-                    // Update local cache
+                    alert("Review Saved!");
                     allReviewsGlobal = allReviewsGlobal.filter(r => !(r.teacherId == teacherId && r.user == loggedInUser));
                     allReviewsGlobal.push(payload);
                     closeModal();
-                    searchTeacher(); // Refresh UI
+                    searchTeacher(); 
                 } else { alert("Error saving review."); }
             })
-            .catch(err => { console.error(err); alert("Connection Failed! But we will try to update locally."); })
+            .catch(err => { console.error(err); alert("Connection Failed!"); })
             .finally(() => { btn.innerText = originalText; btn.disabled = false; btn.style.background = "var(--success-color)"; });
         }
 
