@@ -118,6 +118,14 @@
             width: 100%;
         }
 
+        .profile-row.contact-row {
+            justify-content: center;
+            margin-top: 0.5rem;
+            padding: 1.2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px dashed var(--glass-border);
+        }
+
         /* Rating Stars */
         .rating-group { margin-bottom: 1.5rem; }
         .rating-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
@@ -217,7 +225,7 @@
                 <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600"></span></div>
                 <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600">Checking...</span></div>
                 
-                <div class="profile-row" style="border-bottom: none; margin-top: 15px; justify-content: center; padding-bottom: 0;">
+                <div class="profile-row contact-row">
                     <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link">
                         <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
                     </a>
@@ -329,23 +337,33 @@
             .then(res => res.json())
             .then(async data => {
                 if (data.result === 'success') {
-                    // Success! Now try to get name from Sheet (optional)
+                    // FAST LOGIN: Use Roll as placeholder name immediately
                     let name = "Student " + pendingRoll;
-                    try {
-                        const studentData = await getStudentDataFromSheet(pendingRoll);
-                        if(studentData) name = studentData.name;
-                    } catch(e) {}
+                    const email = pendingRoll + "@kiit.ac.in";
 
                     const sessionData = {
                         roll: pendingRoll,
                         name: name,
-                        email: pendingRoll + "@kiit.ac.in",
+                        email: email,
                         isVerified: true
                     };
 
+                    // Store and Update UI immediately
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
                     loggedInUser = pendingRoll;
-                    updateDashboardUI(name, sessionData.email);
+                    updateDashboardUI(name, email);
+
+                    // Fetch real name in background
+                    getStudentDataFromSheet(pendingRoll).then(studentData => {
+                        if (studentData && studentData.name) {
+                            sessionData.name = studentData.name;
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+                            // Update the displayed name if the element exists
+                            const nameEl = document.getElementById('p-name');
+                            if(nameEl) nameEl.innerText = studentData.name;
+                        }
+                    });
+
                 } else {
                     status.innerText = data.error || "Invalid OTP";
                     status.style.color = "var(--error-color)";
