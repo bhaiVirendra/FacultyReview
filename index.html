@@ -20,6 +20,8 @@
             --shadow-color: rgba(0, 0, 0, 0.1); --accent-glow: rgba(102, 166, 255, 0.5);
             --tag-bg: rgba(255, 255, 255, 0.2); --warning-color: #fbbf24; --error-color: #f87171;
             --success-color: #34d399; --star-active: #FFD700; --star-inactive: rgba(255,255,255,0.3);
+            --modal-bg: #2d3748;
+            --strong-border: rgba(255, 255, 255, 0.6); 
         }
         [data-theme="light"] {
             --bg-gradient-1: #e0c3fc; --bg-gradient-2: #8ec5fc; --bg-gradient-3: #e2ebf0; --bg-gradient-4: #cfd9df;
@@ -28,6 +30,8 @@
             --input-bg: rgba(255, 255, 255, 0.7); --input-border: rgba(255, 255, 255, 1);
             --shadow-color: rgba(0, 0, 0, 0.05); --accent-glow: rgba(142, 197, 252, 0.6);
             --tag-bg: rgba(0, 0, 0, 0.05); --star-inactive: #cbd5e0;
+            --modal-bg: #ffffff;
+            --strong-border: #a0aec0; 
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -80,61 +84,171 @@
         .card-rating-display { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-bottom: 1.5rem; color: var(--star-active); font-weight: 700; }
         .card-rating-display span.score { font-size: 1.1rem; color: var(--text-primary); }
         .t-details-list { display: flex; flex-direction: column; gap: 0.8rem; }
-        .t-row { display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: var(--input-bg); border-radius: 14px; font-size: 0.95rem; transition: transform 0.2s; border: 1px solid transparent; }
-        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); border-color: var(--glass-border); }
+        
+        /* UNIFORM ROW SIZE & DARK BORDER */
+        .t-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 1rem; 
+            min-height: 55px; 
+            background: var(--input-bg); 
+            border: 1px solid var(--strong-border); 
+            border-radius: 14px; 
+            font-size: 0.95rem; 
+            transition: transform 0.2s, background 0.2s; 
+        }
+        .t-row:hover { transform: scale(1.02); background: rgba(255,255,255,0.15); }
         .t-label { color: var(--text-secondary); font-weight: 500; display: flex; align-items: center; gap: 0.6rem; }
         .t-val { font-weight: 600; text-align: right; word-break: break-word; max-width: 60%; }
-        .email-link { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
-        .social-link { background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-decoration: none; font-weight: 800; }
-        .btn-rate { width: 100%; padding: 1rem; margin-top: 0.5rem; border: none; border-radius: 14px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); color: #fff; font-weight: 800; font-size: 1rem; cursor: pointer; box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem; text-shadow: 0 1px 2px rgba(0,0,0,0.1); }
-        [data-theme="light"] .btn-rate { color: #444; }
-        .btn-rate:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
+        
+        .social-link { 
+            background: linear-gradient(45deg, #0077b5 0%, #0e76a8 100%); 
+            -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; 
+            text-decoration: none; font-weight: 800; border-bottom: 1px dotted transparent; transition: border-bottom 0.3s;
+        }
+        .social-link:hover { border-bottom: 1px dotted #0e76a8; }
+        
+        /* ACTION BUTTONS (Rate & Read) */
+        .btn-action { 
+            width: 100%; 
+            padding: 1rem; 
+            margin-top: 0.5rem; 
+            border: none; 
+            border-radius: 14px; 
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%); 
+            color: #fff; 
+            font-weight: 800; 
+            font-size: 1rem; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(255, 154, 158, 0.4); 
+            transition: all 0.2s; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 0.5rem; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1); 
+        }
+        [data-theme="light"] .btn-action { color: #444; }
+        .btn-action:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 154, 158, 0.6); }
+
+        /* Icon inside buttons with Dark Border */
+        .btn-icon-border {
+            text-shadow: 1px 1px 0 #333, -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333;
+            font-size: 1.2rem;
+        }
 
         /* Modals */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s; }
         .modal-overlay.active { display: flex; opacity: 1; }
-        .review-modal { width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; background: var(--glass-bg); background-color: #2d3748; border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; position: relative; transform: scale(0.9); transition: transform 0.3s; color: var(--text-primary); }
-        [data-theme="light"] .review-modal { background-color: #fff; }
+        .review-modal { width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto; background: var(--modal-bg); border: 1px solid var(--glass-border); border-radius: 24px; padding: 2rem; position: relative; transform: scale(0.9); transition: transform 0.3s; color: var(--text-primary); }
         .modal-overlay.active .review-modal { transform: scale(1); }
         .close-btn { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; background: none; border: none; color: var(--text-secondary); cursor: pointer; }
         
-        /* FIX: Student Profile Styling */
-        .profile-details {
+        /* FACULTY NAME STYLE IN MODAL */
+        #modalTeacherName {
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            font-weight: 800; /* Extra Bold */
+            font-size: 1.8rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        [data-theme="light"] #modalTeacherName { color: #1a202c; }
+
+        /* Student Profile Styling - UPDATED WITH DARK BORDERS & EFFECTS */
+        .profile-details { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
+        
+        .profile-row { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 0 1rem; 
+            min-height: 55px; /* Same Height as Faculty Card */
+            background: var(--input-bg); 
+            /* Same Strong Border as Faculty Card */
+            border: 1px solid var(--strong-border); 
+            border-radius: 14px; 
+            font-size: 1rem; 
+            width: 100%;
+            transition: transform 0.2s, background 0.2s; 
+        }
+        
+        /* Add Hover Effect to Profile Rows */
+        .profile-row:hover {
+            transform: scale(1.02);
+            background: rgba(255,255,255,0.15);
+        }
+        
+        .profile-row.contact-row { 
+            justify-content: center; 
+            margin-top: 0.5rem; 
+            padding: 1.2rem; 
+            background: rgba(255, 255, 255, 0.05); 
+            /* Changed from dashed to SOLID DARK border */
+            border: 1px solid var(--strong-border); 
+        }
+
+        /* RATING ROWS - 4 SIDE BORDER */
+        .rating-group { 
+            margin-bottom: 1rem; 
+            padding: 1rem;
+            border-radius: 12px;
+            background: rgba(0,0,0,0.02);
+            border: 1px solid var(--strong-border);
+            border-left: 4px solid var(--strong-border); 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; flex-direction: column; gap: 0.5rem;
+        }
+        .rating-group:hover {
+            background: rgba(0,0,0,0.05);
+            border-left-color: var(--accent-glow);
+            transform: translateX(5px); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        [data-theme="light"] .rating-group:hover { background: #f7fafc; }
+
+        .rating-label { display: block; font-weight: 600; font-size: 0.95rem; opacity: 0.9; }
+        .stars-container { display: flex; gap: 8px; }
+        
+        .star-btn { 
+            background: none; border: none; font-size: 1.8rem; color: var(--star-inactive); cursor: pointer; 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); padding: 0 2px;
+        }
+        .star-btn:hover { transform: scale(1.3) translateY(-2px); filter: drop-shadow(0 0 6px rgba(255, 215, 0, 0.6)); }
+        .star-btn.active { color: var(--star-active); filter: drop-shadow(0 0 2px rgba(255, 215, 0, 0.3)); }
+
+        /* SUBMIT BUTTON - ADDED BORDER */
+        .submit-btn { 
+            width: 100%; 
+            padding: 1rem; 
+            background: var(--success-color); 
+            color: white; 
+            border: 1px solid rgba(0,0,0,0.2); /* Added Dark Border */
+            border-radius: 12px; 
+            font-size: 1.1rem; 
+            font-weight: 700; 
+            margin-top: 1.5rem; 
+            cursor: pointer; 
+            box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); 
+        }
+        
+        /* TEXT REVIEW AREA */
+        .comment-section { 
+            margin-top: 1.5rem; 
+            margin-bottom: 1.5rem; 
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            width: 100%;
+            gap: 0.8rem; 
         }
-
-        .profile-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem;
-            background: var(--input-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            font-size: 1rem;
-            width: 100%;
+        .comment-input { 
+            width: 100%; min-height: 80px; padding: 1rem; background: var(--input-bg); 
+            border: 1px solid var(--strong-border); border-radius: 12px; color: var(--text-primary); 
+            font-family: 'Inter', sans-serif; font-size: 0.95rem; resize: vertical; outline: none; transition: border 0.3s; 
         }
+        .comment-input:focus { border-color: var(--accent-glow); background: rgba(255,255,255,0.15); }
 
-        .profile-row.contact-row {
-            justify-content: center;
-            margin-top: 0.5rem;
-            padding: 1.2rem;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px dashed var(--glass-border);
-        }
-
-        /* Rating Stars */
-        .rating-group { margin-bottom: 1.5rem; }
-        .rating-label { display: block; margin-bottom: 0.5rem; font-weight: 600; font-size: 0.95rem; }
-        .stars-container { display: flex; gap: 5px; }
-        .star-btn { background: none; border: none; font-size: 1.8rem; color: var(--star-inactive); cursor: pointer; transition: transform 0.2s; }
-        .star-btn:hover { transform: scale(1.2); }
-        .star-btn.active { color: var(--star-active); }
-        .submit-btn { width: 100%; padding: 1rem; background: var(--success-color); color: white; border: none; border-radius: 12px; font-size: 1.1rem; font-weight: 700; margin-top: 1.5rem; cursor: pointer; box-shadow: 0 4px 15px rgba(52, 211, 153, 0.4); }
-        
         @media (max-width: 768px) { .results-grid { grid-template-columns: 1fr; } .search-header h1 { font-size: 2rem; } }
         
         .footer-credit { width: 100%; text-align: center; padding: 2rem 0; margin-top: auto; color: var(--text-secondary); font-size: 0.8rem; font-weight: 500; opacity: 0.7; }
@@ -142,14 +256,8 @@
         .insta-contact-link:hover { transform: scale(1.05); }
 
         /* Hide Number Input Spinners */
-        input[type=number]::-webkit-inner-spin-button, 
-        input[type=number]::-webkit-outer-spin-button { 
-            -webkit-appearance: none; 
-            margin: 0; 
-        }
-        input[type=number] {
-            -moz-appearance: textfield;
-        }
+        input[type=number]::-webkit-inner-spin-button, input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
     </style>
 </head>
 <body data-theme="light">
@@ -159,13 +267,11 @@
             <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">Student Login</h1>
             <p style="color: var(--text-secondary); margin-bottom: 2rem;">Verification Required</p>
             
-            <!-- STEP 1: Enter Roll -->
             <div id="step-1-roll">
                 <input type="number" id="kiitRoll" class="login-input" placeholder="Enter Roll Number (e.g. 2105123)">
                 <button onclick="sendOtp()" class="btn-primary" id="btn-send-otp">Send OTP</button>
             </div>
 
-            <!-- STEP 2: Enter OTP (Initially Hidden) -->
             <div id="step-2-otp" class="hidden">
                 <p style="font-size:0.9rem; color:var(--text-secondary); margin-bottom:0.5rem;">
                     OTP sent to <span id="display-email" style="font-weight:bold;"></span>
@@ -238,9 +344,9 @@
     <div class="modal-overlay" id="reviewModal">
         <div class="review-modal">
             <button class="close-btn" onclick="closeModal()">×</button>
-            <h2 style="margin-bottom: 0.2rem;">Rate Faculty</h2>
-            <p id="modalTeacherName" style="color: var(--accent-glow); margin-bottom: 1rem; font-weight: 600;">Teacher Name</p>
-            <p id="editModeIndicator" style="display:none; color: var(--warning-color); font-size:0.8rem; margin-bottom:1.5rem;"><i class="fa-solid fa-pen"></i> You are editing your previous review.</p>
+            <h2 style="margin-bottom: 0.5rem; font-size:1rem; opacity:0.7; text-transform:uppercase; letter-spacing:1px;">Rate Faculty</h2>
+            <p id="modalTeacherName">Teacher Name</p>
+            <p id="editModeIndicator" style="display:none; color: #ea580c; font-size:0.8rem; margin-bottom:1.5rem; font-weight:700;"><i class="fa-solid fa-pen"></i> You are editing your previous review.</p>
             <input type="hidden" id="currentTeacherId">
             <div id="ratingForm"></div>
             <button class="submit-btn" id="modalSubmitBtn" onclick="submitUserReview()">Submit Rating</button>
@@ -492,6 +598,12 @@
                 const starDisplay = stats.count > 0 ? `<span style="color:${starColor}">★</span>` : "☆";
                 const imageSrc = t.image ? t.image : `https://api.dicebear.com/9.x/avataaars/svg?seed=${t.seed || t.id}`;
                 
+                // MOBILE NUMBER LOGIC
+                let phoneHtml = '';
+                if(t.phone && t.phone.trim().length > 0) {
+                    phoneHtml = `<div class="t-row"><span class="t-label">📞 Phone</span><span class="t-val"><a href="tel:${t.phone}" class="social-link">Call</a></span></div>`;
+                }
+
                 return `
                 <div class="teacher-card glass fade-in">
                     <div class="card-banner"></div>
@@ -505,23 +617,23 @@
                         </div>
                         <div class="t-details-list">
                             <div class="t-row"><span class="t-label">🏫 Dept</span><span class="t-val">${t.department}</span></div>
-                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val" style="font-size: 0.85rem;"><a href="mailto:${t.email}" class="email-link">${t.email}</a></span></div>
+                            <div class="t-row"><span class="t-label">📧 Email</span><span class="t-val"><a href="mailto:${t.email}" class="social-link">Connect</a></span></div>
+                            ${phoneHtml} 
                             <div class="t-row"><span class="t-label">🔗 Social</span><span class="t-val"><a href="${t.social}" target="_blank" rel="noopener noreferrer" class="social-link">Connect</a></span></div>
-                            <button class="btn-rate" onclick="openReviewModal(${t.id}, '${t.name}')"><span>⭐</span> Rate Now</button>
+                            
+                            <button class="btn-action" onclick="openReviewModal(${t.id}, '${t.name}')"><span class="btn-icon-border">⭐</span> Rate Now</button>
+                            <button class="btn-action" onclick="alert('Review reading feature coming soon!')"><span class="btn-icon-border">📖</span> Read Reviews</button>
                         </div>
                     </div>
                 </div>`}).join('');
         }
 
         /* --- RATING LOGIC --- */
-        let currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+        let currentRatings = { c1:0, c2:0, c3:0 };
         const criteriaNames = [
             {id: 'c1', label: '1. Behaviour'},
-            {id: 'c2', label: '2. Teaching Style'},
-            {id: 'c3', label: '3. Marks in Exam'},
-            {id: 'c4', label: '4. Marks in Internal'},
-            {id: 'c5', label: '5. Attendance'},
-            {id: 'c6', label: '6. Notes + Assignment'}
+            {id: 'c2', label: '2. Marks in Exam'},
+            {id: 'c3', label: '3. Marks in Internal'}
         ];
 
         function openReviewModal(id, name) {
@@ -531,14 +643,18 @@
             const existingReview = allReviewsGlobal.find(r => r.teacherId == id && r.user == loggedInUser);
             const submitBtn = document.getElementById('modalSubmitBtn');
             const editIndicator = document.getElementById('editModeIndicator');
+            
+            // Variable to hold existing comment
+            let existingComment = "";
 
             if (existingReview) {
-                currentRatings = { ...existingReview.ratings };
+                currentRatings = { c1:0, c2:0, c3:0, ...existingReview.ratings };
+                existingComment = existingReview.comment || ""; 
                 submitBtn.innerText = "Update Review"; 
                 submitBtn.style.background = "var(--bg-gradient-2)";
                 editIndicator.style.display = "block";
             } else {
-                currentRatings = { c1:0, c2:0, c3:0, c4:0, c5:0, c6:0 };
+                currentRatings = { c1:0, c2:0, c3:0 };
                 submitBtn.innerText = "Submit Review";
                 submitBtn.style.background = "var(--success-color)";
                 editIndicator.style.display = "none";
@@ -546,6 +662,8 @@
             
             const formContainer = document.getElementById('ratingForm');
             formContainer.innerHTML = '';
+
+            // 1. Generate Stars
             criteriaNames.forEach(c => {
                 let starsHtml = '';
                 for(let i=1; i<=5; i++) { 
@@ -557,6 +675,16 @@
                 group.innerHTML = `<label class="rating-label">${c.label}</label><div class="stars-container" id="stars-${c.id}">${starsHtml}</div>`;
                 formContainer.appendChild(group);
             });
+
+            // 2. Generate Text Area
+            const commentDiv = document.createElement('div');
+            commentDiv.className = 'comment-section';
+            commentDiv.innerHTML = `
+                <label class="rating-label">Write a Review (Optional)</label>
+                <textarea id="reviewComment" class="comment-input" placeholder="Share your experience with this faculty...">${existingComment}</textarea>
+            `;
+            formContainer.appendChild(commentDiv);
+
             document.getElementById('reviewModal').classList.add('active');
         }
 
@@ -572,10 +700,20 @@
         }
 
         function submitUserReview() {
-            if(Object.values(currentRatings).includes(0)) { alert("Please rate all 6 criteria!"); return; }
+            if(currentRatings.c1 === 0 || currentRatings.c2 === 0 || currentRatings.c3 === 0) { 
+                alert("Please rate all 3 criteria!"); 
+                return; 
+            }
+            
             const teacherId = document.getElementById('currentTeacherId').value;
-            let sum = 0; Object.values(currentRatings).forEach(v => sum += v);
-            const avgScore = (sum / 6).toFixed(1);
+            const commentText = document.getElementById('reviewComment').value.trim();
+
+            let sum = 0;
+            sum += (currentRatings.c1 || 0);
+            sum += (currentRatings.c2 || 0);
+            sum += (currentRatings.c3 || 0);
+
+            const avgScore = (sum / 3).toFixed(1);
             
             const btn = document.querySelector('#reviewModal .submit-btn');
             const originalText = btn.innerText;
@@ -584,10 +722,11 @@
             btn.style.background = "#666";
 
             const payload = { 
-                action: 'submit_review', // IMPORTANT for backend router
+                action: 'submit_review', 
                 teacherId: teacherId, 
                 user: loggedInUser, 
-                ratings: currentRatings, 
+                ratings: { c1: currentRatings.c1, c2: currentRatings.c2, c3: currentRatings.c3 }, 
+                comment: commentText, 
                 avgScore: avgScore 
             };
 
