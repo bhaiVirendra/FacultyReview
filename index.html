@@ -148,36 +148,6 @@
         }
         [data-theme="light"] #modalTeacherName { color: #1a202c; }
 
-        /* Student Profile Styling - UPDATED WITH DARK BORDERS & EFFECTS */
-        .profile-details { display: flex; flex-direction: column; gap: 1rem; width: 100%; }
-        
-        .profile-row { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 0 1rem; 
-            min-height: 55px; /* Same Height as Faculty Card */
-            background: var(--input-bg); 
-            border: 1px solid var(--strong-border); 
-            border-radius: 14px; 
-            font-size: 1rem; 
-            width: 100%;
-            transition: transform 0.2s, background 0.2s; 
-        }
-        
-        .profile-row:hover {
-            transform: scale(1.02);
-            background: rgba(255,255,255,0.15);
-        }
-        
-        .profile-row.contact-row { 
-            justify-content: center; 
-            margin-top: 0.5rem; 
-            padding: 1.2rem; 
-            background: rgba(255, 255, 255, 0.05); 
-            border: 1px solid var(--strong-border); 
-        }
-
         /* RATING ROWS - 4 SIDE BORDER */
         .rating-group { 
             margin-bottom: 1rem; 
@@ -253,7 +223,6 @@
         <div class="navbar">
             <div class="nav-brand"></div>
             <div class="nav-controls">
-                <div class="icon-btn" onclick="toggleProfile()" title="My Profile"><i class="fa-solid fa-user"></i></div>
                 <div class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><span id="themeIcon">☀️</span></div>
             </div>
         </div>
@@ -280,31 +249,6 @@
 
     <div class="footer-credit">Made by Bhai Virendra</div>
 
-    <div class="modal-overlay" id="profileModal">
-        <div class="review-modal">
-            <button class="close-btn" onclick="closeProfile()">×</button>
-            <h2 style="margin-bottom: 1rem;">Student Profile</h2>
-            <div style="text-align: center; margin-bottom: 2rem;">
-                <div style="width: 80px; height: 80px; background: var(--success-color); border-radius: 50%; display:inline-flex; align-items:center; justify-content:center; font-size: 2rem; color: white; box-shadow: 0 4px 20px rgba(52, 211, 153, 0.5);">
-                    <i class="fa-solid fa-graduation-cap"></i>
-                </div>
-            </div>
-            
-            <div class="profile-details">
-                <div class="profile-row"><span style="opacity:0.7">Name</span><span id="p-name" style="font-weight:600">Anonymous Student</span></div>
-                <div class="profile-row"><span style="opacity:0.7">Email</span><span id="p-email" style="font-weight:600">guest@kiit.ac.in</span></div>
-                <div class="profile-row"><span style="opacity:0.7">Status</span><span id="p-status" style="font-weight:600; color: var(--success-color);">Active ✅</span></div>
-                
-                <div class="profile-row contact-row">
-                    <a href="https://www.instagram.com/kiit531?igsh=MXVrNDV6d3A4dHJ4" target="_blank" class="insta-contact-link">
-                        <i class="fa-brands fa-instagram" style="font-size: 1.4rem;"></i> Contact us on Insta
-                    </a>
-                </div>
-            </div>
-            <button class="submit-btn" onclick="closeProfile()">Close Profile</button>
-        </div>
-    </div>
-
     <div class="modal-overlay" id="reviewModal">
         <div class="review-modal">
             <button class="close-btn" onclick="closeModal()">×</button>
@@ -330,9 +274,6 @@
         window.addEventListener('DOMContentLoaded', () => {
             loadAllReviews();
         });
-
-        function toggleProfile() { document.getElementById('profileModal').classList.add('active'); }
-        function closeProfile() { document.getElementById('profileModal').classList.remove('active'); }
         
         let currentTheme = 'light';
         function toggleTheme() {
